@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebSocket</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div class="mainIm">
+    <div>
+        <ul class="mainBox">
+            <div>
+                <textarea id="chatBox" readonly="readonly" style="width:370px;height: 500px;"></textarea>
+            </div>
+        </ul>
+        <ul class="messageBox">
+        </ul>
+    </div>
+    <div class="online" style="display:none;">
+        <input type="text" id="txtContents" placeholder="输入要发送的内容" />
+        <input type="button" value="发送" onclick="sendMsg()" /><input type="button" value="断开连接" onclick="offLine()" />
+    </div>
+    <div class="offline">
+        <input type="text" id="txtUserName" placeholder="请输入一个用户名" />
+     <!--   <input type="text" id="txtgroupName" placeholder="请输入组名" />-->
+        <input type="button" value="连接" onclick="initIm()" />
+    </div>
+</div>
+<script>
+    var im;//WebSocket对象
+    function initIm() {
+        var user=$('#txtUserName').val();
+        var group=$('#txtgroupName').val();
+        im = new MyIm(user,group);
+        $('.online').show();
+        $('.offline').hide();
+        im.Init();
+    }
+
+    //创建一个对象 里面有3个方法，分别为Init：初始化Socket连接、Send：发送消息、Colse：关闭连接
+    //ws://<PUBLIC_HOST>/wsChat/3463d06de0ca9a15/02a44259755d38e6
+    var MyIm = function (user_name,groupName) {
+        this.requestPath = 'ws://<PUBLIC_HOST>:8631/wsChat';
+        this.user_name = "3463d06de0ca9a15";
+        this.group_name = '02a44259755d38e6';
+        this.param = '/'+this.group_name + '/'+this.user_name;
+        this.socekt;
+
+    }
+    MyIm.prototype = {
+        Init: function () {
+            this.socekt = new WebSocket(this.requestPath + this.param);
+            this.socekt.onopen = function () {
+                addSysMessage('连接成功','')
+            };//连接成功
+            this.socekt.onmessage = function (result) {
+                //这里返回的消息为json格式，里面的data为服务器返回的内容
+                // var json = eval('(' + result.data + ')');
+                // if (Number(json.Status) == 1) {
+                //     addSysMessage(json.Contents,json.Time)
+                // } else {
+                //     addMessage(result);
+                // }
+                addMessage(result);
+            };//接收到消息的时候
+            this.socekt.onclose = function (result) {
+                addSysMessage('我的连接关闭了','')
+            }//连接关闭的时候
+            this.socekt.onerror = function (result) {
+                addSysMessage('网络发生了错误', '');//当这一步被执行时，close会被自动执行，所以无需主动去执行关闭方法
+            }//当连接发生错误的时候
+        },
+        Send: function (msg) {
+            //这里可以直接发送消息给服务器，但是为了让服务器好区分我的消息是属于通知还是普通消息还是其他，所以做成了json
+            //后台获取到json，解析后针对不同的消息类型进行处理
+            // var json = '{"Status":0,"Contents":"'+msg+'","Source":"'+this.user_name+'","Aim":""}';
+            // this.socekt.send(json);
+        },
+        Close: function () {
+            if (this.socekt != null) {
+                this.socekt.close();
+                return;
+            }
+        }
+    }
+    //把通知消息载入到通知列表
+    function addSysMessage(msg, time) {
+        if (time.length <= 0) {
+            time = new Date();
+        }
+        $('.messageBox').append('<li><p class=\"message\">' + msg + '</p></li>');
+    }
+    //把聊天消息载入到聊天框
+    function addMessage(json) {
+        console.log(json);
+        // $('.mainBox').append('<li><p class=\"message\">' + json.data + '</p></li>');
+        $("#chatBox").text(json.data);
+    }
+    //发送消息
+    function sendMsg() {
+        var contents = $('#txtContents').val();
+        $.ajax({
+            type: "get",  // 请求方式
+            url: "http://localhost:8631/test/public/sendChatMsg",  // 目标资源
+            dataType: "json",  // 服务器响应的数据类型
+            data: {
+                message:contents,
+                topic:this.group_name,
+                userName:this.user_name
+
+            }, // 请求参数
+            success : function (data) {  // readystate == 4 && status == 200
+                console.log(data);
+            },
+            error : function (data) {
+                console.log(data);
+            }
+        });
+    }
+    //关闭连接
+    function offLine() {
+        im.Close();
+
+        $('.online').hide();
+        $('.offline').show();
+    }
+</script>
+</body>
+
+</html>

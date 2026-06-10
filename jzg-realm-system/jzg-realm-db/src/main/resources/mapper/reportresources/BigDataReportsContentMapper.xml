@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportresources.BigDataReportsContentMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    <id column="pt_big_data_reports_id" jdbcType="INTEGER" property="ptBigDataReportsId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    <result column="report_content_part" jdbcType="LONGVARCHAR" property="reportContentPart" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    pt_big_data_reports_id
+  </sql>
+  <sql id="Blob_Column_List">
+    report_content_part
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from big_data_reports_content
+    where pt_big_data_reports_id = #{ptBigDataReportsId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from big_data_reports_content
+    where pt_big_data_reports_id = #{ptBigDataReportsId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    insert into big_data_reports_content (pt_big_data_reports_id, report_content_part
+      )
+    values (#{ptBigDataReportsId,jdbcType=INTEGER}, #{reportContentPart,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    insert into big_data_reports_content
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ptBigDataReportsId != null">
+        pt_big_data_reports_id,
+      </if>
+      <if test="reportContentPart != null">
+        report_content_part,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ptBigDataReportsId != null">
+        #{ptBigDataReportsId,jdbcType=INTEGER},
+      </if>
+      <if test="reportContentPart != null">
+        #{reportContentPart,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    update big_data_reports_content
+    <set>
+      <if test="reportContentPart != null">
+        report_content_part = #{reportContentPart,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where pt_big_data_reports_id = #{ptBigDataReportsId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReportsContent">
+    update big_data_reports_content
+    set report_content_part = #{reportContentPart,jdbcType=LONGVARCHAR}
+    where pt_big_data_reports_id = #{ptBigDataReportsId,jdbcType=INTEGER}
+  </update>
+</mapper>

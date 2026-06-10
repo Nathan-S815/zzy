@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.carpark.GetEnterCarMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.carpark.GetEnterCar">
+        <id column="index_id" property="indexId" />
+        <result column="park_key" property="parkKey" />
+        <result column="car_no" property="carNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="car_type_no" property="carTypeNo" />
+        <result column="enter_time" property="enterTime" />
+        <result column="enter_gate_name" property="enterGateName" />
+        <result column="enter_operator_name" property="enterOperatorName" />
+        <result column="lock_car" property="lockCar" />
+        <result column="enter_img_path" property="enterImgPath" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        index_id, park_key, car_no, order_no, car_type_no, enter_time, enter_gate_name, enter_operator_name, lock_car, enter_img_path,create_time,update_time
+    </sql>
+
+    <select id="getCarPlaceCount" resultType="java.util.Map">
+        SELECT left(car_no,1) caron,count(*) carcount  from get_enter_car scm
+        <where>
+            <if test="entertime!=null">
+               and  enter_time like Concat(#{entertime},'%')
+            </if>
+        </where>
+        GROUP BY left(car_no,1)
+        order by carcount desc
+    </select>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into get_enter_car (index_id, park_key, car_no, order_no, car_type_no,
+        enter_time, enter_gate_name, enter_operator_name, lock_car, enter_img_path,create_time,update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.indexId},
+            #{item.parkKey},
+            #{item.carNo},
+            #{item.orderNo},
+            #{item.carTypeNo},
+            #{item.enterTime},
+            #{item.enterGateName},
+            #{item.enterOperatorName},
+            #{item.lockCar},
+            #{item.enterImgPath},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+        on duplicate key update
+        order_no = values(order_no),
+        car_type_no = values(car_type_no),
+        enter_time = values(enter_time),
+        update_time = sysdate()
+    </insert>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

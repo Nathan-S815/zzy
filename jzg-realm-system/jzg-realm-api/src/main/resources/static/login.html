@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+</head>
+<body>
+
+<div>
+    <input type="text" id="uname"/> 用户名 <br>
+    <input type="password" id="psd"/> 密码<br>
+    <input type="pict" id="pics"/> 验证码<br>
+    <img src='/kaptcha/registCode' class='yanz_img' onclick='changeyanz($(this));'>
+    <input type="button" id="log"/>登录
+</div>
+
+
+<script>
+
+    function changeyanz(obj){
+        obj.attr("src","/kaptcha/registCode");
+    }
+    // $(function () {
+    //     $.ajax({
+    //         type: "post",  // 请求方式
+    //         url: "/kaptcha/registCode",  // 目标资源
+    //         dataType: "json",  // 服务器响应的数据类型
+    //         success : function (data) {  // readystate == 4 && status == 200
+    //             console.log(data);
+    //         },
+    //         error : function (data) {
+    //             console.log(data);
+    //         }
+    //     });
+    // })
+
+    $('#log').on('click',function(){
+        var url = "/login";
+        var un = $('#uname').val();
+        var pd = $('#psd').val();
+        var pc = $('#pics').val();
+        $.ajax({
+            type: "post",  // 请求方式
+            url: url,  // 目标资源
+            data: {
+                username:un,
+                password:<REDACTED>
+                validateCode:pc
+
+            }, // 请求参数
+            dataType: "json",  // 服务器响应的数据类型
+            success : function (data) {  // readystate == 4 && status == 200
+                console.log(data);
+                alert(data.msg);
+                if(data.msg == 'loginSuccess'){
+                    window.location.href="docs.html";
+                }
+            },
+            complete: function (xhr, data) {
+                /*
+                    获取相关Http Response header
+                    getResponseHeader(key)：获取指定头信息
+                    getAllResponseHeaders()：获取全部可默认可获取的头信息
+                */
+
+                //获取服务端自定义的header信息
+                var stoken = xhr.getResponseHeader('Bearer ');
+                console.log(stoken);
+                localStorage.setItem('user_token', stoken);
+                var token=localStorage.getItem('user_token');
+                console.log(token);
+            },
+            error : function (data) {
+                console.log("failed");
+                console.log(data);
+            }
+        });
+    });
+
+
+</script>
+</body>
+</html>

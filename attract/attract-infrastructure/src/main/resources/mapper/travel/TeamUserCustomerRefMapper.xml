@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.travel.mapper.TeamUserCustomerRefMapper">
+
+
+    <!--<update id="updateUserteamCustomerStatus">-->
+        <!--update  team_user_customer_ref-->
+        <!--SET  STATUS =#{status}  WHERE team_id =#{teamId}-->
+    <!--</update>-->
+
+    <select id="getTravelTeamTripInfo"
+            resultType="com.nuwa.infrastructure.attract.database.travel.entity.TravelTeamTripInfo">
+        SELECT
+              A.team_user_ref_id AS teamUserRefId,
+              B.mch_name AS mchName,
+              A.attendance,
+              B.account_type AS accountType,
+              A.travel_date AS travelDate,
+              A.user_id AS userId,
+              C.team_person AS teamPerson,
+              A.STATUS as teamStatus,
+              A.type,
+              A.mch_review_time as mchReviewTime,
+              A.hotel_rooms AS hotelRooms,
+              A.mch_review_reason AS mchReviewReason,
+              C.official_review_reason AS officialReviewReason
+            FROM
+              team_user_ref A
+              LEFT JOIN
+                (SELECT
+                  user_id,
+                  account_type,
+                  mch_name
+                FROM
+                  attract_user) B
+                ON B.user_id = A.user_id
+               LEFT JOIN (SELECT team_id,team_person ,official_review_reason FROM travel_team)C ON C.team_id = A.team_id
+            WHERE A.team_id = #{teamId} AND A.delete_flag = '0'
+            ORDER BY travel_date ASC
+    </select>
+
+    <select id="qryTeamUserCustomerRef" resultType="java.lang.Long">
+        SELECT customer_id FROM team_user_customer_ref WHERE team_id =#{teamId}
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="userId == null">
+            AND user_id = -1
+        </if>
+        <if test="travelDate != null">
+            AND travel_date = #{travelDate}
+        </if>
+    </select>
+</mapper>

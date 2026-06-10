@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.yidong.JzgydScenicPassengerGenderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.yidong.JzgydScenicPassengerGender">
+        <id column="id" property="id" />
+        <result column="scenic_id" property="scenicId" />
+        <result column="scenic_name" property="scenicName" />
+        <result column="type_id" property="typeId" />
+        <result column="type_name" property="typeName" />
+        <result column="people_num" property="peopleNum" />
+        <result column="time" property="time" />
+        <result column="date_log" property="dateLog" />
+        <result column="date_type" property="dateType" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, scenic_id, scenic_name, type_id, type_name, people_num, time, date_log, date_type, create_time, update_time
+    </sql>
+    <select id="getTouristPortraitSexCount" resultMap="BaseResultMap">
+        select * from jzgyd_scenic_passenger_gender
+        where date_log between #{startTime} and #{endTime}
+    </select>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into jzgyd_scenic_passenger_gender (id, scenic_id, scenic_name, people_num, `time`, type_id, type_name, date_log, date_type, create_time, update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id,jdbcType=INTEGER},
+            #{item.scenicId,jdbcType=VARCHAR},
+            #{item.scenicName,jdbcType=VARCHAR},
+            #{item.peopleNum,jdbcType=INTEGER},
+            #{item.time,jdbcType=VARCHAR},
+            #{item.typeId,jdbcType=VARCHAR},
+            #{item.typeName,jdbcType=INTEGER},
+            #{item.dateLog,jdbcType=INTEGER},
+            #{item.dateType,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+        on duplicate key update
+        people_num = values(people_num),
+        update_time = sysdate()
+    </insert>
+
+</mapper>

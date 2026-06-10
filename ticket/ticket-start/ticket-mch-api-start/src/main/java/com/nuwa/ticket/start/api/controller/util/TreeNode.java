@@ -1,0 +1,43 @@
+package com.nuwa.ticket.start.api.controller.util;
+
+import java.util.List;
+
+/**
+ *
+ * @author Ace
+ * @date 2017/6/12
+ */
+public class TreeNode {
+    protected int id;
+    protected int parentId;
+
+    public List<TreeNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TreeNode> children) {
+        this.children = children;
+    }
+
+    List<TreeNode> children = null;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    public void add(TreeNode node){
+        children.add(node);
+    }
+}

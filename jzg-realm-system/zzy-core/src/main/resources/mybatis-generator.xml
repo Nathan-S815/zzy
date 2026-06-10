@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <properties resource="db.properties" />
+    <context id="prod">
+        <!-- 指定生成的java文件的编码,没有直接生成到项目时中文可能会乱码 -->
+        <property name="javaFileEncoding" value="UTF-8" />
+        <!-- RowBounds pagination -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
+        <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin" />
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+        <!-- 根据注释配置生成 -->
+        <commentGenerator type="com.zzy.core.utils.generate.MybatisCommentGenerator">
+            <property name="suppressDate" value="true" />
+            <property name="suppressAllComments" value="false" />
+        </commentGenerator>
+
+        <!-- jdbc连接 -->
+        <jdbcConnection driverClass="${db.driverClassName}"
+                        connectionURL="${db.url}" userId="${db.username}" password=<REDACTED>
+
+        <!-- 存放实体bean -->
+        <javaModelGenerator targetPackage="${entity.package.path}"
+                            targetProject="${entity.project.path}" />
+
+        <!-- 存放xml映射文件 -->
+        <sqlMapGenerator targetPackage="mapper/auth"
+                         targetProject="${xml.mapper.path}" />
+
+        <!-- dao接口类位置 -->
+        <javaClientGenerator targetPackage="${dao.package.path}"
+                             targetProject="${dao.project.path}" type="XMLMAPPER" />
+
+        <!-- 要生成的表，以及生成后对应的类名称 -->
+        <table  catalog="security_login"  tableName="kaptcha_info" domainObjectName="KaptchaInfo"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false"></table>
+
+    </context>
+</generatorConfiguration>

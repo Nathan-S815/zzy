@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.teamuserref.mapper.TeamUserRefMapper">
+    <resultMap id="BaseResultMap" type="com.nuwa.infrastructure.vo.MchTravelTeamPageVO">
+        <result column="team_id" property="teamId"/>
+        <result column="team_user_ref_id" property="teamUserRefId"/>
+        <result column="travel_date" property="travelDate"/>
+        <result column="leader_name" property="leaderName"/>
+        <result column="leader_phone" property="leaderPhone"/>
+        <result column="leader_idcard" property="leaderIdcard"/>
+        <result column="team_nature" property="teamNature"/>
+        <result column="team_type" property="teamType"/>
+        <result column="mch_name" property="mchName"/>
+        <result column="begin_date" property="beginDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="team_person" property="teamPerson"/>
+        <result column="user_id" property="userId"/>
+        <result column="attendance" property="attendance"/>
+        <result column="apply_time" property="applyTime"/>
+        <result column="hotel_rooms" property="hotelRooms"/>
+        <result column="status" property="teamStatus"/>
+        <result column="team_person" property="teamPerson"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="qryAuditList" resultMap="BaseResultMap">
+        SELECT
+        A.team_user_ref_id,
+        A.team_id,
+        A.user_id,
+        A.attendance,
+        A.travel_date,
+        B.team_person,
+        A.create_time,
+        A.hotel_rooms,
+        A.status,
+        B.leader_name,
+        B.leader_phone,
+        B.team_nature,
+        B.team_type,
+        B.begin_date,
+        B.end_date,
+        B.apply_time,
+        B.team_id,
+        C.mch_name
+        FROM
+        team_user_ref A
+        LEFT JOIN
+        (SELECT
+        user_id,
+        leader_name,
+        leader_phone,
+        leader_idcard,
+        team_person,
+        team_nature,
+        team_type,
+        begin_date,
+        end_date,
+        apply_time,
+        team_id FROM travel_team) B
+        ON A.team_id = B.team_id LEFT JOIN (SELECT mch_name,user_id FROM attract_user) C
+        ON C.user_id = B.user_id
+        WHERE A.user_id = #{userId} AND A.status !='0' AND A.delete_flag !='1'
+        <if test="status != null and status != ''">
+            AND A.status = #{status}
+        </if>
+        <if test="travelAgencyId != null and travelAgencyId != ''">
+            AND B.user_id = #{travelAgencyId}
+        </if>
+        <if test="teamId != null and teamId != ''">
+            AND A.team_id = #{teamId}
+        </if>
+        <if test="mchName != null and mchName != ''">
+            AND C.mch_name = #{mchName}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            <![CDATA[ AND A.create_time >= DATE_FORMAT(#{startDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND A.create_time <= DATE_FORMAT(#{endDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        order by A.create_time desc
+    </select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.DepartmentMemberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.DepartmentMember">
+        <id column="id" property="id" />
+        <result column="department_id" property="departmentId" />
+        <result column="is_login_enable" property="isLoginEnable" />
+        <result column="head_icon" property="headIcon" />
+        <result column="login_name" property="loginName" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="title" property="title" />
+        <result column="gender" property="gender" />
+        <result column="phone_number" property="phoneNumber" />
+        <result column="birth" property="birth" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="email" property="email" />
+        <result column="is_delete" property="isDelete" />
+    </resultMap>
+
+
+
+    <select id="selectAllMemeberByDepartId" resultType="java.util.Map">
+        select id as departMemberId, `name` as memberName,title from department_member
+        where department_id = #{departmentId}
+    </select>
+
+
+    <select id="selectPageMembers" resultType="java.util.Map">
+        select dm.id as memberId,dm.department_id as departId,
+        di.`name` as departName, dm.`name` as memberName,
+        dm.title,dm.gender,dm.phone_number as phoneNumber,dm.birth,dm.email
+        from department_member dm
+        left join department_info di on dm.department_id = di.id
+        <where>
+            <if test="departId != null ">
+                and di.id = #{departId}
+            </if>
+            <if test=" keyWord != null ">
+                and concat(IFNULL(di.`name`,''),IFNULL(dm.`name`,''),IFNULL(dm.phone_number,'')) like concat('%',#{keyWord},'%')
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test=" orderPara != null ">
+                 CONVERT(${orderPara} using gbk) ${orderType}
+            </when>
+            <otherwise>
+                 dm.create_time desc
+            </otherwise>
+        </choose>
+
+    </select>
+
+
+    <update id="updateLoginEnableById">
+        update department_member set is_login_enable = #{isLoginEnable} where
+        id in
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+
+
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportbase.ReportBaseGuideMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.reportbase.ReportBaseGuide">
+        <id column="id" property="id" />
+        <result column="guide_name" property="guideName" />
+        <result column="guide_license_number" property="guideLicenseNumber" />
+        <result column="guide_level" property="guideLevel" />
+        <result column="guide_language" property="guideLanguage" />
+        <result column="mechanism" property="mechanism" />
+        <result column="license" property="license" />
+        <result column="credit" property="credit" />
+        <result column="is_delete" property="isDelete" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, guide_name, guide_license_number, guide_level, guide_language, mechanism, license, credit, is_delete, create_time, update_time
+    </sql>
+
+</mapper>

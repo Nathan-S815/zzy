@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.user.mapper.AttractUserMapper">
+
+    <select id="getMchDetailList" resultType="com.nuwa.infrastructure.vo.screen.MchDetailsVO">
+        SELECT au.user_id,au.mch_name,au.address,au.link_name,au.link_phone,au.create_time
+        FROM attract_user au
+        WHERE au.account_type = #{accountType}
+        <if test="mchName != null and mchName != ''">
+            AND au.mch_name  LIKE concat('%',#{mchName},'%')
+        </if>
+    </select>
+</mapper>

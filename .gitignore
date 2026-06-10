@@ -1,0 +1,16 @@
+.DS_Store
+
+# IDE metadata
+.idea/
+*.iml
+
+# Build output
+target/
+out/
+build/
+
+# Logs and generated runtime files
+*.log
+LOG_FILE_IS_UNDEFINED
+LOG_HOME_IS_UNDEFINED/
+spy.log

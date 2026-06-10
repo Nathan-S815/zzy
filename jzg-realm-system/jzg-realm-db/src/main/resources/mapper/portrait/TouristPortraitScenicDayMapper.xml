@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.portrait.TouristPortraitScenicDayMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.portrait.TouristPortraitScenicDay">
+        <result column="id" property="id" />
+        <result column="ent_time" property="entTime" />
+        <result column="acc_time" property="accTime" />
+        <result column="province_id" property="provinceId" />
+        <result column="city_id" property="cityId" />
+        <result column="scene_id" property="sceneId" />
+        <result column="men_num" property="menNum" />
+        <result column="woman_num" property="womanNum" />
+        <result column="juv_num" property="juvNum" />
+        <result column="young_num" property="youngNum" />
+        <result column="mid_age_num" property="midAgeNum" />
+        <result column="old_num" property="oldNum" />
+        <result column="no_age_num" property="noAgeNum" />
+        <result column="no_sex_num" property="noSexNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ent_time, acc_time, province_id, city_id, scene_id, men_num, woman_num, juv_num, young_num, mid_age_num, old_num, no_age_num, no_sex_num
+    </sql>
+
+    <select id="getTouristPortraitSexCount" resultType="java.util.Map">
+        select men_num '男生人数',woman_num '女生人数' from tourist_portrait_scenic_day
+        <where>
+            <if test="accTime!=null">
+                and acc_time=#{accTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAgeDistribution" resultType="java.util.Map">
+        select juv_num '7－17岁', young_num '18-40岁', mid_age_num '40-65岁', old_num '66岁以上' from tourist_portrait_scenic_day
+        <where>
+            <if test="accTime!=null">
+               and  acc_time=#{accTime}
+            </if>
+            <if test="sceneId!=null">
+              and  scene_id=#{sceneId}
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

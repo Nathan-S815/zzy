@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.task.common.db.dao.PlaceInfoMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.task.common.db.entity.PlaceInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="place_name" jdbcType="VARCHAR" property="placeName" />
+    <result column="place_address" jdbcType="VARCHAR" property="placeAddress" />
+    <result column="site_href" jdbcType="VARCHAR" property="siteHref" />
+    <result column="comment_num" jdbcType="INTEGER" property="commentNum" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="place_source" jdbcType="VARCHAR" property="placeSource" />
+    <result column="place_score" jdbcType="VARCHAR" property="placeScore" />
+    <result column="place_type" jdbcType="VARCHAR" property="placeType" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="key_word" jdbcType="VARCHAR" property="keyWord" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, place_name, place_address, site_href, comment_num, latitude, longitude, place_source, 
+    place_score, place_type, update_time, key_word
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from place_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from place_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.task.common.db.entity.PlaceInfo">
+    insert into place_info (id, place_name, place_address,
+      site_href, comment_num, latitude, 
+      longitude, place_source, place_score, 
+      place_type, update_time, key_word
+      )
+    values (#{id,jdbcType=INTEGER}, #{placeName,jdbcType=VARCHAR}, #{placeAddress,jdbcType=VARCHAR}, 
+      #{siteHref,jdbcType=VARCHAR}, #{commentNum,jdbcType=INTEGER}, #{latitude,jdbcType=VARCHAR}, 
+      #{longitude,jdbcType=VARCHAR}, #{placeSource,jdbcType=VARCHAR}, #{placeScore,jdbcType=VARCHAR}, 
+      #{placeType,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{keyWord,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.task.common.db.entity.PlaceInfo">
+    insert into place_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="placeName != null">
+        place_name,
+      </if>
+      <if test="placeAddress != null">
+        place_address,
+      </if>
+      <if test="siteHref != null">
+        site_href,
+      </if>
+      <if test="commentNum != null">
+        comment_num,
+      </if>
+      <if test="latitude != null">
+        latitude,
+      </if>
+      <if test="longitude != null">
+        longitude,
+      </if>
+      <if test="placeSource != null">
+        place_source,
+      </if>
+      <if test="placeScore != null">
+        place_score,
+      </if>
+      <if test="placeType != null">
+        place_type,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="keyWord != null">
+        key_word,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="placeName != null">
+        #{placeName,jdbcType=VARCHAR},
+      </if>
+      <if test="placeAddress != null">
+        #{placeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="siteHref != null">
+        #{siteHref,jdbcType=VARCHAR},
+      </if>
+      <if test="commentNum != null">
+        #{commentNum,jdbcType=INTEGER},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="placeSource != null">
+        #{placeSource,jdbcType=VARCHAR},
+      </if>
+      <if test="placeScore != null">
+        #{placeScore,jdbcType=VARCHAR},
+      </if>
+      <if test="placeType != null">
+        #{placeType,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="keyWord != null">
+        #{keyWord,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.task.common.db.entity.PlaceInfo">
+    update place_info
+    <set>
+      <if test="placeName != null">
+        place_name = #{placeName,jdbcType=VARCHAR},
+      </if>
+      <if test="placeAddress != null">
+        place_address = #{placeAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="siteHref != null">
+        site_href = #{siteHref,jdbcType=VARCHAR},
+      </if>
+      <if test="commentNum != null">
+        comment_num = #{commentNum,jdbcType=INTEGER},
+      </if>
+      <if test="latitude != null">
+        latitude = #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        longitude = #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="placeSource != null">
+        place_source = #{placeSource,jdbcType=VARCHAR},
+      </if>
+      <if test="placeScore != null">
+        place_score = #{placeScore,jdbcType=VARCHAR},
+      </if>
+      <if test="placeType != null">
+        place_type = #{placeType,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="keyWord != null">
+        key_word = #{keyWord,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.task.common.db.entity.PlaceInfo">
+    update place_info
+    set place_name = #{placeName,jdbcType=VARCHAR},
+      place_address = #{placeAddress,jdbcType=VARCHAR},
+      site_href = #{siteHref,jdbcType=VARCHAR},
+      comment_num = #{commentNum,jdbcType=INTEGER},
+      latitude = #{latitude,jdbcType=VARCHAR},
+      longitude = #{longitude,jdbcType=VARCHAR},
+      place_source = #{placeSource,jdbcType=VARCHAR},
+      place_score = #{placeScore,jdbcType=VARCHAR},
+      place_type = #{placeType,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      key_word = #{keyWord,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <!-- *********************************************custom method ***************************************-->
+
+  <insert id="batchInsertInfo" parameterType="java.util.List">
+    insert into place_info (id,place_name, place_address,
+    site_href, comment_num, latitude,
+    longitude, place_source, place_score,
+    place_type,update_time,key_word)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.id,jdbcType=INTEGER},
+      #{item.placeName,jdbcType=VARCHAR},
+      #{item.placeAddress,jdbcType=VARCHAR},
+      #{item.siteHref,jdbcType=VARCHAR},
+      #{item.commentNum,jdbcType=INTEGER},
+      #{item.latitude,jdbcType=VARCHAR},
+      #{item.longitude,jdbcType=VARCHAR},
+      #{item.placeSource,jdbcType=VARCHAR},
+      #{item.placeScore,jdbcType=VARCHAR},
+      #{item.placeType,jdbcType=VARCHAR},
+      sysdate(),
+      #{item.keyWord,jdbcType=VARCHAR}
+      )
+    </foreach>
+    on duplicate key update
+    site_href = values(site_href),
+    place_score = values(place_score),
+    update_time = sysdate(),
+    key_word = values(key_word)
+  </insert>
+
+
+
+  <select id="selectHrefPlaceByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from place_info
+    where  key_word = #{keyWord,jdbcType=VARCHAR}
+        and place_type = #{placeType,jdbcType=VARCHAR}
+        and place_source = #{placeSource,jdbcType=VARCHAR}
+        and site_href != "-"
+  </select>
+
+    <select id="selectPlaceNames" resultType="java.lang.String">
+      select place_name
+      from place_info
+      where  place_type = #{placeType,jdbcType=VARCHAR}
+      and place_source = #{placeSource,jdbcType=VARCHAR}
+    </select>
+
+
+</mapper>

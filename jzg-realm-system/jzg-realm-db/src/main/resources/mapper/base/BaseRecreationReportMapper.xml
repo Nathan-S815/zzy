@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseRecreationReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseRecreationReport">
+        <id column="id" property="id" />
+        <result column="sub_recreation_id" property="subRecreationId" />
+        <result column="sub_recreation_name" property="subRecreationName" />
+        <result column="in_people" property="inPeople" />
+        <result column="income" property="income" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="report_time" property="reportTime" />
+        <result column="sub_scenic_id" property="subScenicId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_recreation_id, sub_recreation_name, in_people, income, report_matters, create_time, remark, id_delete, user_id, report_time,sub_scenic_id
+    </sql>
+
+    <select id="selectPageListBaseRecreationReport" resultType="java.util.Map">
+        SELECT a.id as id ,
+                a.sub_recreation_id as recreationId ,
+                a.sub_recreation_name as recreationName ,
+                a.income as income ,
+                a.user_id as userId ,
+                report_base_entertainment.contact_people as contactPeople ,
+                report_base_entertainment.contact_phone as contactPhone ,
+                report_base_entertainment.entertainment_phone as scenicPhone ,
+                a.report_time as reportTime
+            FROM(SELECT * FROM base_recreation_report ORDER BY report_time DESC LIMIT 1000) a left join report_base_entertainment on a.sub_recreation_id = report_base_entertainment.id
+            where  id_delete = 0
+            <if test="keyword!=null">
+                and a.sub_recreation_name like concat('%',#{keyword},'%') or a.id like concat('%',#{keyword},'%')
+                or a.income like concat('%',#{keyword},'%') or report_base_entertainment.contact_people like concat('%',#{keyword},'%')
+                or report_base_entertainment.contact_phone like concat('%',#{keyword},'%') or report_base_entertainment.entertainment_phone like concat('%',#{keyword},'%')
+                or report_time like concat('%',#{keyword},'%')
+                )
+            </if>
+            GROUP BY a.sub_recreation_id
+    </select>
+
+    <select id="getByRecreationId" resultType="java.util.Map">
+            SELECT id,report_time,income
+            from base_recreation_report
+            where user_id = #{recreationId}
+            and report_time between #{startTime} and #{endTime} and id_delete = 0
+            order by report_time desc
+    </select>
+
+    <select id="getReportByTime" resultMap="BaseResultMap">
+        select *
+        from base_recreation_report
+        where report_time between #{startTime} and #{endTime} and id_delete = 0
+        order by report_time desc
+    </select>
+
+    <select id="getIncomeByTime" resultType="java.lang.Long">
+        select
+            sum(income)
+            from base_recreation_report
+            where report_time between #{startTime} and #{endTime} and id_delete = 0
+    </select>
+
+    <update id="updateIncome" parameterType="java.lang.Integer">
+        update base_recreation_report
+        set income = #{income}
+        where id = 1
+    </update>
+
+    <select id="getTouristQualityByScenic" resultType="java.util.Map">
+        select scenic_name scenicName,sum(income) income
+        from base_recreation_report recreation join report_base_scenic scenic
+        where sub_scenic_id = scenic.id and recreation.id_delete = 0 and scenic.is_delete = 0
+        and report_time between #{startTime} and #{endTime}
+        GROUP BY scenic_name
+    </select>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.travel.mapper.TeamCustomerRefMapper">
+
+    <select id="queryTeamCustomerPage" resultType="com.nuwa.infrastructure.vo.TeamCustomerPageQueryVO">
+        SELECT A.customer_id as customerId,
+               C.idcard,
+               C.`name`,
+               B.user_id is not null  as party,
+               A.status
+        FROM team_customer_ref A
+                 LEFT JOIN (SELECT *
+                            FROM team_user_customer_ref
+                            WHERE
+                                <if test="userId != null">
+                                    user_id = #{userId}
+                                </if>
+                                <if test="userId == null">
+                                    user_id = -1
+                                </if>
+                                <if test="travelDate != null">
+                                    AND travel_date = #{travelDate}
+                                </if>
+                             ) B ON A.team_id = B.team_id
+            AND A.customer_id = B.customer_id
+                 LEFT JOIN customer C ON A.customer_id = C.customer_id
+        WHERE A.team_id = #{teamId}  AND A.status != '1' AND B.status != '1'
+    </select>
+
+    <select id="queryTeamCustomer" resultType="com.nuwa.infrastructure.vo.TeamCustomerPageQueryVO">
+        select
+          cd.team_id,
+          cd.customer_id,
+          ac.idcard,
+          ac.name
+        from
+          team_customer_ref cd
+          left join
+            (select
+              customer_id,
+              name,
+              idcard
+            from
+              customer) ac
+            on ac.customer_id = cd.customer_id
+            WHERE  team_id = #{teamId}
+    </select>
+
+    <!--<update id="updateteamCustomerStatus">-->
+       <!--update  team_customer_ref-->
+        <!--SET  STATUS =#{status}  WHERE team_id =#{teamId}-->
+    <!--</update>-->
+</mapper>

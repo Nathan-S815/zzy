@@ -1,0 +1,44 @@
+mybatis:
+  type-aliases-package: com.zzy.**.entity
+  configuration:
+    cache-enabled: false
+    call-setters-on-nulls: true
+
+jwt:
+  header: Authorization
+  secret: mySecret
+  tokenHead: "Bearer "
+
+spring:
+  application:
+    name: jzg-realm-api
+  profiles:
+    active: dev
+#    active: prod
+#    active: test
+
+mongodb:
+  database: jzg_chat_data
+  username: zzyjzgmg
+  password: <REDACTED>
+  address: 112.44.67.32:8807
+  authenticationDatabase: jzg_chat_data
+  clientName: ${spring.application.name}
+  connectionTimeoutMs: 10000
+  readTimeoutMs: 15000
+  poolMaxWaitTimeMs: 3000
+  connectionMaxIdleTimeMs: 60000
+  connectionMaxLifeTimeMs: 120000
+  heartbeatFrequencyMs: 30000
+  minHeartbeatFrequencyMs: 30000
+  heartbeatConnectionTimeoutMs: 10000
+  heartbeatReadTimeoutMs: 15000
+  connectionsPerHost: 5
+  minConnectionsPerHost: 3
+  threadsAllowedToBlockForConnectionMultiplier: 10
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+package ${cfg.queryPagePackage};
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import com.nuwa.framework.cola.starter.dto.NuwaPageQry;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+
+/**
+ * <pre>
+ * $!{table.comment} PageQry参数对象
+ * </pre>
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(value = "$!{table.comment}PageQry")
+public class ${entity}PageQry extends NuwaPageQry {
+    private static final long serialVersionUID = 1L;
+
+## ----------  BEGIN 字段循环遍历  ----------
+#foreach($field in ${table.fields})
+#if($field.comment!= '' && ($field.comment.matches(".*\[q_\w*\].*")  ))
+#set($comment="$field.comment.replaceAll('\[\w*\]', '')")
+#if($field.comment.indexOf("between") != -1)
+#set($start="Start")
+#set($end="End")
+#set($startComment="开始")
+#set($endComment="结束")
+
+#if("$!field.comment" != "")
+    @ApiModelProperty(value = "${comment}${startComment}")
+#end
+    private ${field.propertyType} ${field.propertyName}${start};
+
+#if("$!field.comment" != "")
+    @ApiModelProperty(value = "${comment}${endComment}")
+#end
+    private ${field.propertyType} ${field.propertyName}${end};
+
+#else
+#if("$!field.comment" != "")
+    @ApiModelProperty(value = "${comment}")
+#end
+    private ${field.propertyType} ${field.propertyName};
+
+#end
+#end
+#end
+## ----------  END 字段循环遍历  ----------
+}

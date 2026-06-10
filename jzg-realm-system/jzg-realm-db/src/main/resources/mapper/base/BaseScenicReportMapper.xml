@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseScenicReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseScenicReport">
+        <id column="id" property="id" />
+        <result column="sub_scenic_id" property="subScenicId" />
+        <result column="sub_scenic_name" property="subScenicName" />
+        <result column="in_people" property="inPeople" />
+        <result column="out_people" property="outPeople" />
+        <result column="income" property="income" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="report_time" property="reportTime" />
+        <result column="total_num" property="totalNum" />
+        <result column="team_num" property="teamNum" />
+        <result column="alone_num" property="aloneNum" />
+        <result column="complaints_rescue" property="complaintsRescue" />
+        <result column="food_service_num" property="foodServiceNum" />
+        <result column="sentiment_state" property="sentimentState" />
+        <result column="wechat_article_num" property="wechatArticleNum" />
+        <result column="reserve_total_num" property="reserveTotalNum" />
+        <result column="reserve_team_num" property="reserveTeamNum" />
+        <result column="reserve_alone_num" property="reserveAloneNum" />
+        <result column="province_top1" property="provinceTop1" />
+        <result column="top1_count" property="top1Count" />
+        <result column="province_top2" property="provinceTop2" />
+        <result column="top2_count" property="top2Count" />
+        <result column="province_top3" property="provinceTop3" />
+        <result column="top3_count" property="top3Count" />
+        <result column="province_top4" property="provinceTop4" />
+        <result column="top4_count" property="top4Count" />
+        <result column="province_top5" property="provinceTop5" />
+        <result column="top5_count" property="top5Count" />
+        <result column="province_top6" property="provinceTop6" />
+        <result column="top6_count" property="top6Count" />
+        <result column="province_top7" property="provinceTop7" />
+        <result column="top7_count" property="top7Count" />
+        <result column="province_top8" property="provinceTop8" />
+        <result column="top8_count" property="top8Count" />
+        <result column="province_top9" property="provinceTop9" />
+        <result column="top9_count" property="top9Count" />
+        <result column="province_top10" property="provinceTop10" />
+        <result column="top10_count" property="top10Count" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_scenic_id, sub_scenic_name, in_people, out_people, income, report_matters, create_time, remark, id_delete,user_id,report_time,
+         total_num, team_num, alone_num, complaints_rescue, food_service_num, sentiment_state, wechat_article_num, reserve_total_num, reserve_team_num, reserve_alone_num,
+          province_top1, top1_count, province_top2, top2_count, province_top3, top3_count, province_top4, top4_count, province_top5, top5_count, province_top6, top6_count,
+           province_top7, top7_count, province_top8, top8_count, province_top9, top9_count, province_top10, top10_count
+    </sql>
+    <select id="selectPageListBaseScenicReport" resultType="java.util.Map">
+        SELECT a.id as id ,
+                a.sub_scenic_id as senic_id ,
+                a.sub_scenic_name as senic_name ,
+                a.in_people as in_people ,
+                a.income as income ,
+                report_base_scenic.contact_people as contact_people ,
+                report_base_scenic.contact_phone as contact_phone ,
+                report_base_scenic.scenic_phone as scenic_phone ,
+                a.report_time as report_time,
+                a.total_num as total_num,
+                a.food_service_num as food_service_num,
+                a.reserve_total_num as reserve_total_num
+            FROM(SELECT * FROM base_scenic_report ORDER BY report_time DESC LIMIT 1000) a left join report_base_scenic on a.sub_scenic_id = report_base_scenic.id
+            where id_delete = 0
+            <if test="keyword!=null">
+                and (a.sub_scenic_name like concat('%',#{keyword},'%') or  a.id like concat('%',#{keyword},'%') or  a.report_time like concat('%',#{keyword},'%')
+                or  a.total_num like concat('%',#{keyword},'%') or a.reserve_total_num like concat('%',#{keyword},'%')
+                or a.food_service_num like concat('%',#{keyword},'%') or report_base_scenic.contact_people like concat('%',#{keyword},'%')
+                or report_base_scenic.contact_phone like concat('%',#{keyword},'%') or report_base_scenic.scenic_phone like concat('%',#{keyword},'%'))
+            </if>
+
+            GROUP BY a.sub_scenic_id
+    </select>
+
+    <select id="getInPeopleAndIncome" resultType="java.util.Map">
+        SELECT
+	sum( in_people ) inPeople,
+	sum(out_people) outPeople,
+	sum( income ) income,
+	create_time createTime
+FROM
+	base_scenic_report
+	where user_id =#{userId} and create_time like Concat(#{nowDate},'%') and id_delete = 0
+    </select>
+
+    <select id="getIncomeByTime" resultType="java.lang.Long">
+        select
+            sum(income)
+            from base_scenic_report
+            where report_time between #{startTime} and #{endTime} and id_delete = 0
+    </select>
+
+    <select id="getByScenicId" resultType="java.util.Map">
+            SELECT *
+            from base_scenic_report
+            where user_id = #{scenicId}
+            and report_time between #{startTime} and #{endTime}
+            and id_delete = 0
+            order by report_time desc
+    </select>
+
+    <update id="updateIncome" parameterType="java.lang.Integer">
+        update base_scenic_report
+        set income = #{income}
+        where id = 1
+    </update>
+</mapper>

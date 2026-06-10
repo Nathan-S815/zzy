@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.portrait.TouristStayScenicMonthMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.portrait.TouristStayScenicMonth">
+        <result column="id" property="id" />
+        <result column="ent_time" property="entTime" />
+        <result column="acc_time" property="accTime" />
+        <result column="province_id" property="provinceId" />
+        <result column="city_id" property="cityId" />
+        <result column="scene_id" property="sceneId" />
+        <result column="stay_one" property="stayOne" />
+        <result column="stay_two" property="stayTwo" />
+        <result column="stay_three" property="stayThree" />
+        <result column="stay_four" property="stayFour" />
+        <result column="stay_five" property="stayFive" />
+        <result column="stay_six" property="staySix" />
+        <result column="stay_seven" property="staySeven" />
+        <result column="stay_eight" property="stayEight" />
+        <result column="stay_avg" property="stayAvg" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ent_time, acc_time, province_id, city_id, scene_id, stay_one, stay_two, stay_three, stay_four, stay_five, stay_six, stay_seven, stay_eight, stay_avg
+    </sql>
+
+    <select id="getTouristStayOutProvince" resultType="java.util.Map">
+        SELECT
+        sum( stay_one ) '1天',
+        sum( stay_two ) '2天',
+        sum( stay_three ) '3天',
+        sum( stay_four ) '4天',
+        sum( stay_five ) '5天',
+        sum(stay_six) '6天',
+        sum(stay_seven) '7天',
+        sum(stay_eight) '8天',
+        avg(stay_avg) '省外平均天数'
+        FROM
+        tourist_stay_scenic_month
+        <where>
+         province_id != 081
+        and acc_time =#{accTime}
+        <if test="sceneId!=null">
+           and scene_id=#{sceneId}
+        </if>
+        </where>
+
+    </select>
+    <select id="getTouristStayInProvince" resultType="java.util.Map">
+        SELECT
+       sum( stay_one ) '1天',
+        sum( stay_two ) '2天',
+        sum( stay_three ) '3天',
+        sum( stay_four ) '4天',
+        sum( stay_five ) '5天',
+        sum(stay_six) '6天',
+        sum(stay_seven) '7天',
+        sum(stay_eight) '8天',
+        avg(stay_avg) '省内平均天数'
+        FROM
+        tourist_stay_scenic_month
+        <where>
+        province_id = 081
+        and acc_time =#{accTime}
+        <if test="sceneId!=null">
+            and scene_id=#{sceneId}
+        </if>
+        </where>
+    </select>
+
+    <select id="getTouristStayInProvinceByScenic" resultType="java.util.Map">
+        SELECT
+       sum( a.stay_one ) '1天',
+        sum( a.stay_two ) '2天',
+        sum( a.stay_three ) '3天',
+        sum( a.stay_four ) '4天',
+        sum( a.stay_five ) '5天',
+        sum(a.stay_six) '6天',
+        sum(a.stay_seven) '7天',
+        sum(a.stay_eight) '8天',
+				b.scenic_name
+        FROM
+        tourist_stay_scenic_month  a left join base_scenic b on a.scene_id=b.id
+        <where>
+            a.province_id = 081
+            <if test="accTime!=null">
+                and a.acc_time =#{accTime}
+            </if>
+        </where>
+				group by a.scene_id
+    </select>
+
+    <select id="getTouristStayOutProvinceByScenic" resultType="java.util.Map">
+        SELECT
+       sum( a.stay_one ) '1天',
+        sum( a.stay_two ) '2天',
+        sum( a.stay_three ) '3天',
+        sum( a.stay_four ) '4天',
+        sum( a.stay_five ) '5天',
+        sum(a.stay_six) '6天',
+        sum(a.stay_seven) '7天',
+        sum(a.stay_eight) '8天',
+				b.scenic_name
+        FROM
+        tourist_stay_scenic_month  a left join base_scenic b on a.scene_id=b.id
+        <where>
+            a.province_id != 081
+            <if test="accTime!=null">
+                and a.acc_time =#{accTime}
+            </if>
+        </where>
+				group by a.scene_id
+    </select>
+
+</mapper>

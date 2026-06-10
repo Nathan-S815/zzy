@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.EventFeedbackFileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.EventFeedbackFile">
+        <id column="feed_back_id" property="feedBackId" />
+        <result column="pic1_path" property="pic1Path" />
+        <result column="pic2_path" property="pic2Path" />
+        <result column="pic3_path" property="pic3Path" />
+        <result column="file_path" property="filePath" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        feed_back_id, pic1_path, pic2_path, pic3_path, file_path,update_time
+    </sql>
+
+</mapper>

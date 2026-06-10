@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>这是一个聊天室</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <style>
+        #showarea{
+            border:1px solid darkgrey;
+            border-radius:10px;
+            min-height: 350px;
+            padding: 10px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <br />
+        <input type="text" id="eventId" placeholder="eventId"/>
+        <input type="text" id="userId" placeholder="userId"/>
+        <a href="javascript:;" onclick="conn()">开启聊天</a>
+        <a href="javascript:;" onclick="closeChat()">关闭聊天</a>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <!--用户名-->
+                <input type="text" class="form-control" value="匿名" id="username">
+                <br />
+                <!--聊天内容-->
+                <textarea value="输入聊天内容" rows="10" class="form-control" id="sendarea"></textarea>
+                <br />
+                <!--提交按钮-->
+                <button class="btn btn-block btn-success" onclick="submitmsg()">发送</button>
+            </div>
+        </div>
+
+        <div class="col-sm-8">
+            <!--消息列表展示区-->
+            <div id="showarea" style="overflow-y:auto; overflow-x:auto; width:400px; height:400px;">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script>
+
+    //当打开页面时新建WebSocket连接
+    var host = window.location.host;
+    var ws = null;
+
+    function closeChat() {
+        this.ws.onclose = function(){
+            console.log("关闭连接");
+        };
+    }
+
+        function conn() {
+        var eventId = document.getElementById("eventId").value;
+        var userId = document.getElementById("userId").value;
+        $.ajax({
+            type: "get",  // 请求方式
+            url: "/depart/openChatGroup",  // 目标资源
+            dataType: "json",  // 服务器响应的数据类型
+            data:{
+              eventId:eventId,
+              userId:userId
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MSIsInVzZXJfaWQiOjEsInNjb3BlIjpbIlJPT1QiXSwiZXhwIjoxNTk3NTk1MDgwLCJpYXQiOjE1OTUzOTUwODAsImp0aSI6ImM0MjZhODAzLTIzYjgtNGE5ZC1iZjE0LTNmZTU2ZWJmMTc0MSJ9.c-UF0Kg5WceyJZBhlYbtv6qB1f9Zm_BSN2HKZ1KseW_5C0paLOa5DcLH88nw4POPkl7qwlltVtl1K1_YeZdnDQ");
+            },
+            success : function (data) {  // readystate == 4 && status == 200
+                var url = data.data.wsUrl;
+                this.ws = new WebSocket(url);
+                this.ws.onopen = function(evn){
+                    console.log(evn,0);
+                };
+                /**
+                 *从服务器接收消息
+                 *ws.onmessage方法，当后台接受发送信息时触发
+                 */
+                this.ws.onmessage = function(evn){
+                    console.log(evn,1)
+                    if(evn.data.indexOf("status>>>")==0){
+                        console.log("状态:>>>")
+                        console.log(evn.data,99)
+                    }else{
+                        // //转换为json字符串
+                        var tmp = evn.data;
+                        // //往页面插入消息
+                        var msg = document.createElement("h4");
+                        // for (var x in tmp) {
+                        //     var context = JSON.parse(x)+'&nbsp;&nbsp;'+'<br />';
+                        msg.innerHTML=tmp;
+                        var showareadiv = document.getElementById("showarea");
+                        showareadiv.appendChild(msg);
+                        // }
+                    }
+                };
+
+                /**
+                 *ws.onclose方法，当窗口关闭，会话结束时触发
+                 */
+                this.ws.onclose = function(){
+                    console.log("关闭连接");
+                };
+            },
+            error : function (data) {
+                console.log(data);
+            }
+        });
+
+    }
+
+
+
+    /**
+     *发送消息给服务器
+     */
+    function submitmsg() {
+        //获取用户名和要发送的消息
+        var eventId = document.getElementById("eventId").value;
+        var sendarea = document.getElementById("sendarea").value;
+        var userId = document.getElementById("userId").value;
+        //转换为json字符串
+        var jsonmsg ={
+            eventId:eventId,
+            message:sendarea,
+            userId:userId
+        }
+        $.ajax({
+            type: "get",  // 请求方式
+            url: "http://112.44.67.32:8631/depart/sendChatMsg",  // 目标资源
+            dataType: "json",  // 服务器响应的数据类型
+            data:jsonmsg,
+            beforeSend: function(request) {
+                request.setRequestHeader("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MSIsInVzZXJfaWQiOjEsInNjb3BlIjpbIlJPT1QiXSwiZXhwIjoxNTk3NTk1MDgwLCJpYXQiOjE1OTUzOTUwODAsImp0aSI6ImM0MjZhODAzLTIzYjgtNGE5ZC1iZjE0LTNmZTU2ZWJmMTc0MSJ9.c-UF0Kg5WceyJZBhlYbtv6qB1f9Zm_BSN2HKZ1KseW_5C0paLOa5DcLH88nw4POPkl7qwlltVtl1K1_YeZdnDQ");
+            },
+            success : function (data) {  // readystate == 4 && status == 200
+                var t = data.data;
+                console.log(t,33)
+                if(data.code=='10000'){
+                   $("#sendarea").val("");
+                }
+
+            },
+            error : function (data) {
+                console.log(data);
+            }
+        });
+        //发送消息
+        // ws.send(JSON.stringify(jsonmsg));
+    }
+
+
+    /*日期转换*/
+    function getDate(time){
+        var date = new Date(time);
+        Year = date.getFullYear();
+        Month = date.getMonth();
+        Day = date.getDay();
+        time = Year+"-"+getZero(Month)+"-"+getZero(Month);
+        return time;
+    }
+    /*日期补零*/
+    function getZero(num){
+
+        if(parseInt(num) < 10 ){
+            num = "0" + num;
+        }
+
+        return num;
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <timestamp key="bySecond" datePattern="yyyy-MM-dd HH:mm:ss" />
+    <!-- 定义日志的根目录 -->
+    <property name="LOG_HOME" value="./logs" />
+    <!-- 日志最大的历史 30天 -->
+    <property name="maxHistory" value="30"/>
+    <!-- 日志文件大小最大值 -->
+    <property name="maxFileSize" value="15MB"/>
+    <property name="loggerPattern" value="%date{yyyy-MM-dd HH:mm:ss.SSS}-[%-5level]-[%logger{36}.%M\(%line\)]|%msg%n"/>
+
+    <!-- 控制台日志打印配置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"><!-- [%thread][%-5level] -->
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}-[%-5level]-[%thread]-[%logger{36}.%M\(%line\)]:::%msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+
+    <!-- info日志信息文件配置 -->
+    <appender name="info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 级别过滤器，过滤掉非info的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_HOME}/info/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/info/info-%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <MaxHistory>${maxHistory}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy >
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}-[%thread]-[%-5level]-[%logger{36}.%M\(%line\)]:::%msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 级别过滤器，过滤掉非info的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_HOME}/error/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/error/error-%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <MaxHistory>${maxHistory}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy >
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}-[%thread]-[%-5level]-[%logger{36}.%M\(%line\)]:::%msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 级别过滤器，过滤掉非info的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_HOME}/debug/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/debug/debug-%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <MaxHistory>${maxHistory}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy >
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}-[%thread]-[%-5level]-[%logger{36}.%M\(%line\)]:::%msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <logger name="io.lettuce" level="OFF" />
+    <logger name="org.apache" level="OFF" />
+    <logger name="sun.net.www" level="OFF" />
+    <logger name="org.hibernate" level="OFF" />
+    <logger name="com.zaxxer.hikari" level="OFF" />
+    <logger name="io.netty" level="OFF" />
+    <logger name="ch.qos.logback" level="OFF" />
+    <logger name="com.gargoylesoftware" level="OFF" />
+    <logger name="org.mybatis.spring.SqlSessionFactoryBean" level="OFF" />
+   <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="OFF" />
+    <logger name="org.mybatis.spring.mapper.ClassPathMapperScanner" level="OFF" />
+    <logger name="org.springframework.context.annotation.ClassPathBeanDefinitionScanner" level="OFF" />
+    <logger name="org.springframework.boot.autoconfigure.logging" level="OFF" />
+    <logger name="springfox.documentation" level="OFF" />
+    <logger name="org.springframework.security.web.util.matcher.AntPathRequestMatcher" level="OFF" />
+
+    <logger name="com.baomidou.mybatisplus.core.MybatisConfiguration" level="OFF" />
+    <logger name="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean" level="OFF" />
+    <logger name="org.springframework.security.web" level="OFF" />
+    <logger name="org.mongodb.driver.connection" level="OFF" />
+    <logger name="org.mongodb.driver" level="OFF" />
+
+
+
+    <logger name="org.springframework.boot.web.embedded.tomcat.TomcatWebServer" level="DEBUG" />
+    <logger name="com.baomidou.mybatisplus.core.MybatisConfiguration" level="OFF" />
+    <logger name="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean" level="OFF" />
+    <logger name="org.springframework.security.web" level="OFF" />
+
+    <logger name="com.alibaba.druid.pool.DruidDataSource" level="OFF" />
+    <logger name="org.mybatis.spring.SqlSessionUtils" level="OFF" />
+    <logger name="org.springframework.security.access.vote.AffirmativeBased" level="OFF" />
+
+    <logger name="org.mybatis.spring.transaction.SpringManagedTransaction" level="OFF" />
+
+
+    <root>
+       <appender-ref ref="STDOUT" />
+        <appender-ref ref="error" />
+        <appender-ref ref="info" />
+        <appender-ref ref="debug" />
+
+    </root>
+</configuration>

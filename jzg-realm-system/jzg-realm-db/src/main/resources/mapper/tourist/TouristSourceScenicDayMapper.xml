@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.tourist.TouristSourceScenicDayMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.tourist.TouristSourceScenicDay">
+        <result column="id" property="id" />
+        <result column="ent_time" property="entTime" />
+        <result column="acc_time" property="accTime" />
+        <result column="province_id" property="provinceId" />
+        <result column="city_id" property="cityId" />
+        <result column="scene_id" property="sceneId" />
+        <result column="so_province" property="soProvince" />
+        <result column="so_city" property="soCity" />
+        <result column="num" property="num" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, ent_time, acc_time, province_id, city_id, scene_id, so_province, so_city, num
+    </sql>
+
+    <select id="getTouristDistribution" resultType="java.util.Map">
+        select sum(num) as num,scenic_name
+            from tourist_source_scenic_day join scenic_code
+            where scene_id = scenic_code and acc_time between #{startTime} and #{endTime}
+            group by scene_id
+    </select>
+
+    <select id="getTouristFromByScenic" resultType="java.util.Map">
+        select sum(num) as num,province_name
+            from tourist_source_scenic_day join scenic_code join region_code
+            where scenic_code = scene_id
+            and city_code= so_city
+            and scenic_name like concat(#{scenicName},'%')
+            and acc_time between #{startTime} and #{endTime}
+            group by province_name
+            order by num desc
+            limit 12
+    </select>
+
+    <select id="getTouristFromByScenicCity" resultType="java.util.Map">
+        select sum(num) as num,city_name
+            from tourist_source_scenic_day join scenic_code join region_code
+            where scenic_code = scene_id
+            and city_code= so_city
+            and scenic_name like concat(#{scenicName},'%')
+            and acc_time between #{startTime} and #{endTime}
+            and region_code.province_code = 081
+            group by city_name
+            order by num desc
+            limit 12
+    </select>
+
+    <select id="getAllTouristFrom" resultType="java.util.Map">
+        select sum(num) as num,province_name
+            from tourist_source_scenic_day join scenic_code join region_code
+            where scenic_code = scene_id
+            and city_code= so_city
+            and acc_time between #{startTime} and #{endTime}
+            group by province_name
+            order by num desc
+            limit 5
+    </select>
+
+    <select id="getAllTouristNumberByScenic" resultType="java.lang.Long">
+        select sum(num) as num
+            from tourist_source_scenic_day join scenic_code
+            where scenic_code = scene_id
+            and scenic_name like concat(#{scenicName},'%')
+            and acc_time between #{startTime} and #{endTime}
+    </select>
+
+    <select id="getAllTouristNumber" resultType="java.lang.Long">
+        select sum(num) as num
+            from tourist_source_scenic_day join scenic_code
+            where scenic_code = scene_id
+            and acc_time between #{startTime} and #{endTime}
+    </select>
+
+    <select id="getScenicTouristNumber" resultType="java.util.Map">
+        select sum(num) as num,
+			scenic_code.scenic_name as scenic
+            from tourist_source_scenic_day join scenic_code
+            where scenic_code = scene_id
+            and acc_time between #{startTime} and #{endTime}
+			GROUP BY scenic_code.scenic_name
+    </select>
+
+    <select id="getTouristNumberContrast" resultType="java.util.Map">
+        select sum(num) as num, acc_time as date
+            from tourist_source_scenic_day
+            where acc_time between #{startTime} and #{endTime}
+            GROUP BY acc_time
+            ORDER BY acc_time asc
+    </select>
+</mapper>

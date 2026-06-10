@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseTrafficReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseTrafficReport">
+        <id column="id" property="id" />
+        <result column="sub_traffic_id" property="subTrafficId" />
+        <result column="sub_traffic_name" property="subTrafficName" />
+        <result column="in_people" property="inPeople" />
+        <result column="income" property="income" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="report_time" property="reportTime" />
+        <result column="sub_scenic_id" property="subScenicId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_traffic_id, sub_traffic_name, in_people, income, report_matters, create_time, remark, id_delete, user_id, report_time,sub_scenic_id
+    </sql>
+    <select id="selectPageListBaseTrafficReport" resultType="java.util.Map">
+        SELECT a.id as id ,
+                a.sub_traffic_id as trafficId ,
+                a.sub_traffic_name as trafficName ,
+                a.income as income ,
+                a.user_id as userId ,
+                report_base_traffic.contact_people as contactPeople ,
+                report_base_traffic.contact_phone as contactPhone ,
+                report_base_traffic.traffic_phone as scenicPhone ,
+                a.report_time as reportTime
+            FROM(SELECT * FROM base_traffic_report ORDER BY report_time DESC LIMIT 1000) a left join report_base_traffic on a.sub_traffic_id = report_base_traffic.id
+            where a.id_delete = 0
+            <if test="keyword!=null">
+                and (a.sub_traffic_name like concat('%',#{keyword},'%') or a.id like concat('%',#{keyword},'%')
+                or a.income like concat('%',#{keyword},'%') or report_base_traffic.contact_people like
+                concat('%',#{keyword},'%')
+                or report_base_traffic.contact_phone like concat('%',#{keyword},'%') or
+                report_base_traffic.traffic_phone like concat('%',#{keyword},'%')
+                or a.report_time like concat('%',#{keyword},'%')
+                )
+            </if>
+            GROUP BY a.sub_traffic_id
+    </select>
+
+    <select id="getByTrafficId" resultType="java.util.Map">
+            SELECT id,report_time,income
+            from base_traffic_report
+            where user_id = #{trafficId}
+            and id_delete = 0
+            and report_time between #{startTime} and #{endTime}
+            order by report_time desc
+    </select>
+
+    <select id="getReportByTime" resultMap="BaseResultMap">
+        select *
+        from base_traffic_report
+        where report_time between #{startTime} and #{endTime}
+        order by report_time desc
+    </select>
+
+    <select id="getIncomeByTime" resultType="java.lang.Long">
+        select
+            sum(income)
+            from base_traffic_report
+            where report_time between #{startTime} and #{endTime}
+    </select>
+
+    <update id="updateIncome" parameterType="java.lang.Integer">
+        update base_traffic_report
+        set income = #{income}
+        where id = 1
+    </update>
+
+    <select id="getTouristQualityByScenic" resultType="java.util.Map">
+        select scenic_name scenicName,sum(income) income
+        from base_traffic_report traffic join report_base_scenic scenic
+        where sub_scenic_id = scenic.id and traffic.id_delete = 0 and scenic.is_delete = 0
+        and report_time between #{startTime} and #{endTime}
+        GROUP BY scenic_name
+    </select>
+
+</mapper>

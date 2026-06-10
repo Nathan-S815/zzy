@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.task.common.db.dao.RestaurantCommentInfoMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="comment_place_name" jdbcType="VARCHAR" property="commentPlaceName" />
+    <result column="comment_time" jdbcType="TIMESTAMP" property="commentTime" />
+    <result column="comment_user" jdbcType="VARCHAR" property="commentUser" />
+    <result column="comment_type" jdbcType="INTEGER" property="commentType" />
+    <result column="comment_score" jdbcType="DOUBLE" property="commentScore" />
+    <result column="comment_source" jdbcType="VARCHAR" property="commentSource" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    <result column="comment_content" jdbcType="LONGVARCHAR" property="commentContent" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, comment_place_name, comment_time, comment_user, comment_type, comment_score, 
+    comment_source, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    comment_content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from restaurant_comment_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from restaurant_comment_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    insert into restaurant_comment_info (id, comment_place_name, comment_time,
+      comment_user, comment_type, comment_score, 
+      comment_source, create_time, comment_content
+      )
+    values (#{id,jdbcType=INTEGER}, #{commentPlaceName,jdbcType=VARCHAR}, #{commentTime,jdbcType=TIMESTAMP}, 
+      #{commentUser,jdbcType=VARCHAR}, #{commentType,jdbcType=INTEGER}, #{commentScore,jdbcType=DOUBLE}, 
+      #{commentSource,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{commentContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    insert into restaurant_comment_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="commentPlaceName != null">
+        comment_place_name,
+      </if>
+      <if test="commentTime != null">
+        comment_time,
+      </if>
+      <if test="commentUser != null">
+        comment_user,
+      </if>
+      <if test="commentType != null">
+        comment_type,
+      </if>
+      <if test="commentScore != null">
+        comment_score,
+      </if>
+      <if test="commentSource != null">
+        comment_source,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="commentContent != null">
+        comment_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="commentPlaceName != null">
+        #{commentPlaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commentUser != null">
+        #{commentUser,jdbcType=VARCHAR},
+      </if>
+      <if test="commentType != null">
+        #{commentType,jdbcType=INTEGER},
+      </if>
+      <if test="commentScore != null">
+        #{commentScore,jdbcType=DOUBLE},
+      </if>
+      <if test="commentSource != null">
+        #{commentSource,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commentContent != null">
+        #{commentContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    update restaurant_comment_info
+    <set>
+      <if test="commentPlaceName != null">
+        comment_place_name = #{commentPlaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commentUser != null">
+        comment_user = #{commentUser,jdbcType=VARCHAR},
+      </if>
+      <if test="commentType != null">
+        comment_type = #{commentType,jdbcType=INTEGER},
+      </if>
+      <if test="commentScore != null">
+        comment_score = #{commentScore,jdbcType=DOUBLE},
+      </if>
+      <if test="commentSource != null">
+        comment_source = #{commentSource,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commentContent != null">
+        comment_content = #{commentContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    update restaurant_comment_info
+    set comment_place_name = #{commentPlaceName,jdbcType=VARCHAR},
+      comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      comment_user = #{commentUser,jdbcType=VARCHAR},
+      comment_type = #{commentType,jdbcType=INTEGER},
+      comment_score = #{commentScore,jdbcType=DOUBLE},
+      comment_source = #{commentSource,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      comment_content = #{commentContent,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.task.common.db.entity.RestaurantCommentInfo">
+    update restaurant_comment_info
+    set comment_place_name = #{commentPlaceName,jdbcType=VARCHAR},
+      comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      comment_user = #{commentUser,jdbcType=VARCHAR},
+      comment_type = #{commentType,jdbcType=INTEGER},
+      comment_score = #{commentScore,jdbcType=DOUBLE},
+      comment_source = #{commentSource,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <!-- *********************************************custom method ***************************************-->
+
+  <insert id="batchInsertInfo" parameterType="java.util.List">
+      insert into restaurant_comment_info (id, comment_place_name, comment_time,
+      comment_user, comment_type, comment_score,
+      comment_source, create_time, comment_content
+      )
+      values
+  <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.id,jdbcType=INTEGER},
+      #{item.commentPlaceName,jdbcType=VARCHAR},
+      #{item.commentTime,jdbcType=TIMESTAMP},
+      #{item.commentUser,jdbcType=VARCHAR},
+      #{item.commentType,jdbcType=INTEGER},
+      #{item.commentScore,jdbcType=DOUBLE},
+      #{item.commentSource,jdbcType=VARCHAR},
+      #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.commentContent,jdbcType=LONGVARCHAR}
+      )
+  </foreach>
+    on duplicate key update
+    comment_type = values(comment_type),
+    create_time = sysdate()
+  </insert>
+
+
+  <insert id="batchInsertPutuoInfo"  parameterType="java.util.List">
+    insert into restaurant_comment_info_putuo (id, comment_place_name, comment_time,
+    comment_user, comment_type, comment_score,
+    comment_source, create_time, comment_content
+    )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.id,jdbcType=INTEGER},
+      #{item.commentPlaceName,jdbcType=VARCHAR},
+      #{item.commentTime,jdbcType=TIMESTAMP},
+      #{item.commentUser,jdbcType=VARCHAR},
+      #{item.commentType,jdbcType=INTEGER},
+      #{item.commentScore,jdbcType=DOUBLE},
+      #{item.commentSource,jdbcType=VARCHAR},
+      #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.commentContent,jdbcType=LONGVARCHAR}
+      )
+    </foreach>
+    on duplicate key update
+    comment_type = values(comment_type),
+    create_time = sysdate()
+  </insert>
+
+
+
+
+
+    <select id="selectUnGetCommentsByMap" parameterType="java.util.Map" resultType="java.lang.String">
+      SELECT
+       pi.place_name
+      FROM place_info pi
+      LEFT JOIN (
+      SELECT
+      COUNT(rci.id) as get_num,rci.comment_place_name,rci.comment_source
+      from
+      restaurant_comment_info rci
+      GROUP BY rci.comment_place_name,rci.comment_source
+      ) a ON pi.place_name = a.comment_place_name AND pi.place_source = a.comment_source
+      WHERE pi.place_type = #{placeType} AND pi.place_source = #{placeSource} AND pi.comment_num > 0
+      AND a.get_num is NULL
+      ORDER BY pi.comment_num desc
+  </select>
+
+
+  <select id="selectBaseNamesByMap" parameterType="java.util.Map" resultType="java.lang.String">
+      SELECT
+      pi.place_name
+      FROM place_info pi
+      WHERE pi.key_word= #{keyWord} and pi.place_type = #{placeType} AND pi.place_source = #{placeSource}
+  </select>
+  <select id="selectNewestCommentInfo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from restaurant_comment_info
+    order by comment_time desc
+    limit 1
+  </select>
+
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseTravelLineReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseTravelLineReport">
+        <id column="id" property="id" />
+        <result column="sub_travel_id" property="subTravelId" />
+        <result column="sub_travel_name" property="subTravelName" />
+        <result column="travel_line" property="travelLine" />
+        <result column="people_num" property="peopleNum" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="report_time" property="reportTime" />
+        <result column="line_introduction" property="lineIntroduction" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_travel_id, sub_travel_name, travel_line, people_num, report_matters, create_time, remark, id_delete, user_id, report_time, line_introduction
+    </sql>
+
+    <select id="getBaseTravelLineReportByTime" resultMap="BaseResultMap">
+        select * from base_travel_line_report
+        <where>
+            <if test="startTime!=null and endTime!=null">
+                report_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+        order by report_time desc
+    </select>
+
+    <select id="getBaseTravelByTime" resultType="java.util.Map">
+        select sub_travel_name as subTravelName , sum(people_num) as peopleNum from base_travel_line_report
+        <where>
+            <if test="startTime!=null and endTime!=null">
+                report_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+        group by sub_travel_name
+        order by peopleNum desc
+    </select>
+
+    <select id="selectPageListBaseTravelLineReport" resultMap="BaseResultMap">
+        select * from base_travel_line_report
+        where user_id = #{travelId}
+        and report_time between #{startTime} and #{endTime} and id_delete = 0
+        order by report_time desc
+    </select>
+
+    <select id="getTravelForecastWeek" resultType="int">
+        select sum( people_num ) from base_travel_line_report
+        <where>
+            <if test="startTime!=null and endTime!=null">
+                report_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

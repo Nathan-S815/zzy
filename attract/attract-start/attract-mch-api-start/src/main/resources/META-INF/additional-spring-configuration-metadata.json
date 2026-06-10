@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.nacos.discovery.enabled",
+      "type": "java.lang.String",
+      "description": "Description for spring.cloud.nacos.discovery.enabled."
+    },
+    {
+      "name": "spring.redis.redisson.singleServerConfig.address",
+      "type": "java.lang.String",
+      "description": "Description for spring.redis.redisson.singleServerConfig.address."
+    }
+  ] }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.user.mapper.MemberAccountBindMapper">
+
+    <select id="getMemberDetailList" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemberDetailVO">
+        SELECT  mab.user_id,mab.nick as userNick,mb.user_img,mab.level,mab.fans_count,mab.region
+         FROM
+         member_account_bind mab
+         LEFT JOIN (SELECT user_id,mch_id,user_img FROM member ) mb ON mb.user_id = mab.user_id
+       WHERE 1=1 AND mb.mch_id= #{mchId}
+        <if test="opType != null and  opType !=1 ">
+            AND DATE_FORMAT(mab.create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+        </if>
+        <if test="userNick != null and  userNick !=''">
+            AND mab.nick LIKE concat(concat('%',#{userNick}),'%')
+        </if>
+       ORDER BY fans_count DESC
+    </select>
+    <select id="getMemberFansCountList" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemBerFansCountVO">
+            SELECT
+              mab.user_id,
+              mab.sex,
+              mb.user_nike,
+              mb.user_img,
+              mab.level,
+              mab.nick AS userWechatNick,
+              mbr.nick AS userDouYinNick,
+              IFNULL(mab.fans_count, 0) AS fansCount,
+              mab.region,
+              mbr.third_party_tag,
+              mab.create_time
+            FROM
+              member_account_bind mab
+              LEFT JOIN
+                (SELECT
+                  user_id,
+                  third_party_tag,
+                  nick
+                FROM
+                  member_account_bind_record) mbr
+                ON mbr.user_id = mab.user_id
+              LEFT JOIN
+                (SELECT
+                  user_id,
+                  user_nike,
+                  user_img,
+                  mch_id
+                FROM
+                  member) mb
+                ON mb.user_id = mab.user_id
+                WHERE 1=1 AND mb.mch_id= #{mchId}
+            GROUP BY mab.user_id
+            ORDER BY mab.fans_count DESC
+    </select>
+
+    <select id="getMemberGmvDetailList" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemberGmvDetailVO">
+        SELECT
+          mab.user_id,
+          mab.user_nike,
+          mab.user_level_id as level,
+          mab.user_img,
+          mab.gmv
+          FROM member mab
+          WHERE  1=1  AND mab.mch_id= #{mchId}
+          ORDER BY mab.gmv DESC
+    </select>
+
+    <select id="getMemberVideoDetailList" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberVideoVO">
+        SELECT
+          mta.create_by_name,
+          mta.video,
+          st.name as taskName
+        FROM
+          member_task_apply mta
+          LEFT JOIN
+            (SELECT
+              id,
+              NAME,
+              mch_id
+            FROM
+              scenic_task) st
+            ON st.id = mta.task_id
+        WHERE mta.video IS NOT NULL
+          AND st.mch_id = #{mchId}
+          ORDER  BY mta.weight ASC
+    </select>
+</mapper>

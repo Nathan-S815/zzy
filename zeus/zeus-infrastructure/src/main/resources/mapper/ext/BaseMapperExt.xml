@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.zeus.database.base.mapper.ext.BaseMapperExt">
+
+    <select id="selectMemberByGroupId" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseUser">
+        select u.* from base_user u
+                            left join  base_group_member gm
+                                       on gm.user_id = u.id where gm.group_id = #{groupId}
+    </select>
+
+    <select id="selectLeaderByGroupId" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseUser">
+        select u.* from base_user u
+                            left join  base_group_leader gm
+                                       on gm.user_id = u.id where gm.group_id = #{groupId}
+    </select>
+
+
+    <select id="selectMenuByAuthorityId" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseMenu">
+        select t.* from base_resource_authority ra
+                            inner join base_menu t
+                                       on ra.resource_id = t.id
+                                           and ra.authority_id = #{authorityId}
+                                           and ra.authority_type = #{authorityType}
+                                           and ra.resource_type = 'menu'
+        order by t.order_num asc
+    </select>
+
+    <select id="selectAuthorityMenuByUserId" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseMenu">
+        select distinct t.* from base_resource_authority ra
+                                     inner join base_menu t
+                                                on ra.resource_id = t.id
+                                                    and ra.authority_id in (
+                                                        select group_id from base_group_member where user_id = #{userId}
+                                                        union select group_id from base_group_leader where user_id = #{userId}
+                                                    )
+                                                    and ra.authority_type = 'group'
+                                                    and ra.resource_type = 'menu'
+        order by t.order_num asc
+    </select>
+
+    <select id="selectAuthoritySystemByUserId" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseMenu">
+        select distinct t.* from base_resource_authority ra
+                                     inner join base_menu t
+                                                on ra.resource_id = t.id
+                                                    and ra.authority_id in (
+                                                        select group_id from base_group_member where user_id = #{userId}
+                                                        union select group_id from base_group_leader where user_id = #{userId}
+                                                    )
+                                                    and ra.authority_type = 'group'
+                                                    and ra.resource_type = 'menu'
+        where t.parent_id = -1 order by t.order_num asc
+    </select>
+
+    <select id="selectUserAuthorityMenuByUserIdAndGroupId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseMenu">
+        select distinct t.* from base_resource_authority ra
+                                     inner join base_menu t
+                                                on ra.resource_id = t.id
+                                                    and ra.authority_id in (
+                                                        select group_id from base_group_member where user_id = #{userId}
+                                                        union select group_id from base_group_leader where user_id = #{userId}
+                                                    )
+                                                    and ra.authority_type = 'group'
+                                                    and ra.resource_type = 'menu'
+                                                    and ra.authority_id = #{groupId}
+        order by t.order_num asc
+    </select>
+
+    <select id="selectUserAuthorityMenuByUserIdAndAppId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseMenu">
+        select distinct t.* from base_resource_authority ra
+                                     inner join base_menu t
+                                                on ra.resource_id = t.id
+                                                    and ra.authority_type = 'user'
+                                                    and ra.resource_type = 'menu'
+                                                    and ra.authority_id = #{userId}
+                                                    and ra.parent_id = #{appId}
+        order by t.order_num asc
+    </select>
+
+    <select id="selectAuthorityElementByUserId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseElement">
+        select distinct t.code,t.type,t.name,t.uri,t.method,m.title as menu_id from base_resource_authority ra
+             inner join base_element t
+                        on ra.resource_id = t.id
+                            and ra.authority_id in (
+                                select group_id from base_group_member where user_id = #{userId}
+                                union select group_id from base_group_leader where user_id = #{userId}
+                            )
+                            and ra.authority_type = 'group'
+                            and ra.resource_type = 'button'
+             inner join base_menu m
+                        on t.menu_id = m.id
+    </select>
+
+    <select id="selectAuthorityElementByUserId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseElement">
+        select distinct t.code,t.type,t.name,t.uri,t.method,m.title as menu_id from base_resource_authority ra
+                                                                                        inner join base_element t
+                                                                                                   on ra.resource_id = t.id
+                                                                                                       and ra.authority_id in (
+                                                                                                           select group_id from base_group_member where user_id = #{userId}
+                                                                                                           union select group_id from base_group_leader where user_id = #{userId}
+                                                                                                       )
+                                                                                                       and ra.authority_type = 'group'
+                                                                                                       and ra.resource_type = 'button'
+                                                                                        inner join base_menu m
+                                                                                                   on t.menu_id = m.id
+    </select>
+
+    <select id="selectAuthorityElementByUserIdAndAuthUser"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseElement">
+        select distinct t.code,t.type,t.name,t.uri,t.method,m.title as menu_id from base_resource_authority ra
+                                                                                        inner join base_element t
+                                                                                                   on ra.resource_id = t.id
+                                                                                                       and authority_id = #{userId}
+                                                                                                       and ra.authority_type = 'user'
+                                                                                                       and ra.resource_type = 'button'
+                                                                                        inner join base_menu m
+                                                                                                   on t.menu_id = m.id
+
+
+    </select>
+
+    <select id="selectAuthorityMenuElementByMenuId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseElement">
+        select distinct t.* from base_resource_authority ra
+                                     inner join base_element t
+                                                on ra.resource_id = t.id
+                                                    and ra.authority_type = 'group'
+                                                    and ra.resource_type = 'button'
+                                                    and t.menu_id = #{menuId}
+    </select>
+
+    <select id="selectAllElementPermissions" resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseElement">
+        select distinct t.code,t.type,t.name,t.uri,t.method,m.title as menu_id from base_element t
+                                                                                        inner join base_menu m
+                                                                                                   on t.menu_id = m.id
+    </select>
+
+    <select id="getAppTree" resultType="java.util.Map">
+        SELECT
+            a.id id,
+            a.app_name text,
+            a.logo icon,
+            IF ( ad.dependent_app_id IS NULL,-1, ad.dependent_app_id )
+                AS parentId,
+            IF( IF ( ad.dependent_app_id IS NULL,-1, ad.dependent_app_id ) = m_app.parent_app_id,1, 0 ) checked
+        FROM
+            app_info a
+        LEFT JOIN app_dependent ad ON a.id = ad.app_id
+        LEFT JOIN ( SELECT * FROM merchant_app ma WHERE ma.merchant_id = #{merchantId} ) m_app ON a.id = m_app.app_id
+        and IF ( ad.dependent_app_id IS NULL,-1, ad.dependent_app_id ) = m_app.parent_app_id
+        where a.status = 1
+        order by a.id;
+    </select>
+
+    <select id="selectUserRootApps" resultType="com.nuwa.infrastructure.zeus.database.app.entity.AppInfo">
+        SELECT app.* from  base_group bg
+                               LEFT JOIN base_group_member bgm on bgm.group_id = bg.id
+                               LEFT JOIN app_info app on app.id = bg.`code`
+        WHERE bgm.user_id = #{userId} and app.app_type=1
+    </select>
+
+    <select id="selectUserCoreRootApps" resultType="com.nuwa.infrastructure.zeus.database.app.entity.AppInfo">
+        SELECT app.* from  base_group bg
+                               LEFT JOIN base_group_member bgm on bgm.group_id = bg.id
+                               LEFT JOIN app_info app on app.id = bg.`code`
+        WHERE bgm.user_id = #{userId} and app.app_type=3
+    </select>
+
+    <select id="selectUserSubApps" resultType="com.nuwa.infrastructure.zeus.database.app.entity.AppInfo">
+        SELECT app.*,bgm.parent_group_id from  base_group bg
+                                                   LEFT JOIN base_group_member bgm on bgm.group_id = bg.id
+                                                   LEFT JOIN app_info app on app.id = bg.`code`
+        WHERE bgm.user_id = #{userId} and app.app_type=2 and bgm.parent_group_id= #{parentGroupId}
+    </select>
+
+    <select id="listAuthorityByAppId"
+            resultType="com.nuwa.infrastructure.zeus.database.base.entity.BaseResourceAuthority">
+        select distinct ra.* from base_resource_authority ra LEFT JOIN base_group bg on ra.authority_id = bg.id
+        WHERE ra.authority_type = 'group' and bg.`code` =  #{appId}
+    </select>
+
+    <select id="selectMerchantChildApps" resultType="java.util.Map">
+    select bg1.id id,if(bg2.id is null,-1,bg2.id) parentId,app_info.app_name as 'name',app_info.status as 'status' ,bg1.code appId,app_info.provider,bg2.code parentAppId
+        from base_group_member bgm
+        left join base_group bg1 on bgm.group_id = bg1.id
+        left join base_group bg2 on bgm.parent_group_id = bg2.id
+        LEFT JOIN app_info app_info on bg1.`code` = app_info.id
+        where bgm.user_id = #{userId} and bg1.group_type=2
+</select>
+
+</mapper>

@@ -1,0 +1,5 @@
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.zzy.task.common.db.entity
+  configuration:
+    cache-enabled: false

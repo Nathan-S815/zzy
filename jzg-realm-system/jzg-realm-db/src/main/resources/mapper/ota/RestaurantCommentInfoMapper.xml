@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.ota.RestaurantCommentInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.ota.RestaurantCommentInfo">
+        <id column="id" property="id" />
+        <result column="place_key_word" property="placeKeyWord" />
+        <result column="comment_place_name" property="commentPlaceName" />
+        <result column="comment_time" property="commentTime" />
+        <result column="comment_user" property="commentUser" />
+        <result column="comment_type" property="commentType" />
+        <result column="comment_score" property="commentScore" />
+        <result column="comment_content" property="commentContent" />
+        <result column="comment_source" property="commentSource" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, place_key_word, comment_place_name, comment_time, comment_user,comment_type,comment_score,comment_content,comment_source,create_time
+    </sql>
+
+    <select id="selectNowRestaurantScore" resultType="com.zzy.db.entity.ota.RestaurantCommentInfo">
+        select id,comment_place_name,max(comment_time) as comment_time ,avg(comment_score) as comment_score
+            from restaurant_comment_info
+            WHERE comment_time between #{startTime} and #{endTime}
+            GROUP BY comment_place_name
+            ORDER BY comment_score desc
+            limit 5
+    </select>
+
+    <select id="selectBeforeRestaurantScore" resultType="java.lang.Double">
+        select avg(comment_score)
+            from restaurant_comment_info
+            where comment_time between #{beforeTime} and #{startTime} and comment_place_name = #{commentPlaceName}
+    </select>
+</mapper>

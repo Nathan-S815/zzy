@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportbase.ReportBaseShoppingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.reportbase.ReportBaseShopping">
+        <id column="id" property="id" />
+        <result column="shopping_name" property="shoppingName" />
+        <result column="address" property="address" />
+        <result column="shopping_phone" property="shoppingPhone" />
+        <result column="contact_people" property="contactPeople" />
+        <result column="contact_phone" property="contactPhone" />
+        <result column="business_license" property="businessLicense" />
+        <result column="legal_person" property="legalPerson" />
+        <result column="legal_idcard" property="legalIdcard" />
+        <result column="create_time" property="createTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="audit_state" property="auditState" />
+        <result column="user_id" property="userId" />
+        <result column="grade" property="grade" />
+        <result column="lat" property="lat" />
+        <result column="lng" property="lng" />
+        <result column="max_bearing" property="maxBearing" />
+        <result column="warning_value" property="warningValue" />
+        <result column="now_people" property="nowPeople" />
+        <result column="scenic_id" property="scenicId" />
+        <result column="legal_photo" property="legalPhoto" />
+        <result column="abbreviation" property="abbreviation" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, shopping_name, abbreviation,address, shopping_phone, contact_people, contact_phone, business_license, legal_person, legal_idcard, create_time, is_delete, audit_state, user_id
+        ,grade,lat,lng,max_bearing,warning_value,now_people,scenic_id,legal_photo
+    </sql>
+
+    <select id="selectPageListBaseShopping" resultMap="BaseResultMap">
+          SELECT * FROM report_base_shopping
+	where shopping_name like concat('%',#{keyword},'%')
+    </select>
+
+</mapper>

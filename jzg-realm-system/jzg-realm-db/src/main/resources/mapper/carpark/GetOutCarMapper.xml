@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.carpark.GetOutCarMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.carpark.GetOutCar">
+        <id column="index_id" property="indexId" />
+        <result column="park_key" property="parkKey" />
+        <result column="car_no" property="carNo" />
+        <result column="order_no" property="orderNo" />
+        <result column="car_type_no" property="carTypeNo" />
+        <result column="out_time" property="outTime" />
+        <result column="out_gate_name" property="outGateName" />
+        <result column="out_operator_name" property="outOperatorName" />
+        <result column="lock_car" property="lockCar" />
+        <result column="out_img_path" property="outImgPath" />
+        <result column="free_reason" property="freeReason" />
+        <result column="total_amount" property="totalAmount" />
+        <result column="enter_time" property="enterTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        index_id, park_key, car_no, order_no, car_type_no, out_time, out_gate_name, out_operator_name, lock_car, out_img_path, free_reason, total_amount, enter_time,create_time,update_time
+    </sql>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into get_out_car (index_id, park_key, car_no, order_no, car_type_no, out_time, out_gate_name, out_operator_name, lock_car, out_img_path, free_reason, total_amount, enter_time,create_time,update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.indexId},
+            #{item.parkKey},
+            #{item.carNo},
+            #{item.orderNo},
+            #{item.carTypeNo},
+            #{item.outTime},
+            #{item.outGateName},
+            #{item.outOperatorName},
+            #{item.lockCar},
+            #{item.outImgPath},
+            #{item.freeReason},
+            #{item.totalAmount},
+            #{item.enterTime},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+        on duplicate key update
+        order_no = values(order_no),
+        car_type_no = values(car_type_no),
+        out_time = values(out_time),
+        update_time = sysdate()
+    </insert>
+
+    <select id="selectOneByInfo" resultType="com.zzy.db.entity.carpark.GetOutCar">
+        select index_id, park_key, car_no, order_no, car_type_no, out_time, out_gate_name, out_operator_name, lock_car, out_img_path, free_reason, total_amount, enter_time,create_time,update_time
+        from get_out_car where
+        park_key = #{parkKey}
+        and car_no = #{carNo}
+        and order_no = #{orderNo}
+        and car_type_no = #{carTypeNo}
+    </select>
+
+</mapper>

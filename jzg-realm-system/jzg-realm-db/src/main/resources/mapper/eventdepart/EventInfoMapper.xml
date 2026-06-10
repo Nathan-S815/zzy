@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.EventInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.EventInfo">
+        <id column="id" property="id"/>
+        <result column="event_name" property="eventName"/>
+        <result column="event_type_id" property="eventTypeId"/>
+        <result column="event_form" property="eventForm"/>
+        <result column="event_status" property="eventStatus"/>
+        <result column="event_level" property="eventLevel"/>
+        <result column="event_content" property="eventContent"/>
+        <result column="event_publisher" property="eventPublisher"/>
+        <result column="create_time" property="createTime"/>
+        <result column="expire_date" property="expireDate"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+        <result column="close_remark" property="closeRemark"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="is_single" property="isSingle"/>
+        <result column="report_status" property="reportStatus"/>
+        <result column="report_member_id" property="reportMemberId"/>
+        <result column="lng" property="lng"/>
+        <result column="lat" property="lat"/>
+        <result column="address" property="address"/>
+        <result column="happen_time" property="happenTime"/>
+        <result column="is_need_intervene" property="isNeedIntervene"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, event_name, event_type_id, event_status, event_level, event_content, event_publisher, create_time,expire_date,
+        update_time, remark, close_remark, is_delete,is_single,report_status,report_member_id,
+        lng,lat,address,happen_time,is_need_intervene,event_form
+    </sql>
+
+
+    <select id="selectPageEventList" resultType="java.util.Map">
+        select
+        ei.id as eventId, ei.event_name as eventName, eti.`type_name` as typeName, ei.event_type_id as typeId,ci.people_pic as peoplePic,
+        ci.complain_name,ci.complain_type,ci.complain_unit,ci.complain_people,dm2.`name` as memberName,
+        ei.expire_date as expireDate,ei.event_status as eventStatus,ei.address,ei.lng,ei.lat,ei.happen_time as happenTime,
+        ei.is_need_intervene as isNeedIntervene, di.`name` as departName, dm.head_icon as headIcon,dm.phone_number as phoneNumber,
+        ei.event_level as eventLevel, ei.event_publisher as publisher, ei.create_time as createTime
+        FROM event_info ei
+        LEFT JOIN event_type_info eti on eti.id = ei.event_type_id
+        LEFT JOIN event_depart_member edm ON ei.id = edm.event_id
+        LEFT JOIN department_member dm ON edm.depart_member_id = dm.id
+        LEFT JOIN department_member dm2 ON ei.report_member_id = dm2.id
+        LEFT JOIN department_info di ON dm.department_id = di.id
+        LEFT JOIN complain_event_info cei ON cei.event_id = ei.id
+        LEFT JOIN complain_info ci ON ci.id = cei.complain_id
+        where ei.report_status=#{reportStatus}
+        <if test="eventTypeId != null">
+            and ei.event_type_id = #{eventTypeId}
+        </if>
+        <if test="eventLevel != null">
+            and ei.event_level = #{eventLevel}
+        </if>
+        <if test="eventName != null">
+            and ei.event_name like CONCAT('%',#{eventName},'%')
+        </if>
+        <if test="departId != null">
+            AND dm.department_id = #{departId}
+        </if>
+        <if test="eventStatus != null">
+            and ei.event_status in
+            <foreach collection="eventStatus" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <choose>
+            <when test="startTime!=null and endTime==null">
+                and ei.create_time >= #{startTime}
+            </when>
+            <when test="endTime!=null and startTime==null">
+                and ei.create_time &lt;= #{endTime}
+            </when>
+            <when test="startTime!=null and endTime!=null">
+                and ei.create_time between #{startTime} and #{endTime}
+            </when>
+        </choose>
+        GROUP BY eventId
+        order by ei.create_time desc
+    </select>
+
+
+    <select id="selectDepartmentTaskList" resultType="java.util.Map">
+        SELECT
+        ei.id as eventId, ei.event_name as eventName, ei.event_type_id as eventTypeId,
+        eti.type_name as typeName, ei.event_status as eventStatus,ei.address,ei.lng,ei.lat,
+        ei.event_level as eventLevel, ei.event_content as eventContent,ei.happen_time as happenTime,
+        ei.create_time as createTime,ei.report_member_id as reportMemberId,edm.`name` as memberName,edm.phone_number phone,
+        edm.head_icon as headIcon
+        FROM event_info ei
+        LEFT JOIN department_member edm ON ei.report_member_id = edm.id
+        LEFT JOIN event_type_info eti ON ei.event_type_id = eti.id
+        WHERE ei.report_status = 1
+        <if test="departId!=null">
+            AND edm.department_id = #{departId}
+        </if>
+        <if test="eventStatus!=null">
+            and ei.event_status=#{eventStatus}
+        </if>
+        <if test="title!=null">
+            and edm.title=#{title}
+        </if>
+        <choose>
+            <when test="startTime!=null and endTime!=null">
+                and ei.create_time between #{startTime} and #{endTime}
+            </when>
+            <when test="startTime!=null and endTime==null">
+                and ei.create_time >= #{startTime}
+            </when>
+            <when test="startTime==null and endTime!=null">
+                and ei.create_time &lt;= #{endTime}
+            </when>
+        </choose>
+        order by ei.create_time desc
+    </select>
+
+
+    <select id="selectEventDetailByeventId" resultType="java.util.Map">
+        SELECT
+        ei.id as eventId, ei.event_name as eventName, ei.event_type_id as eventTypeId,ei.address,ei.remark,
+        ei.is_single as isSingle,ei.is_need_intervene as isNeedIntervene,ei.close_remark as closeRemark,
+        eti.type_name as typeName, ei.event_status as eventStatus,ei.address,ei.lng,ei.lat,ei.event_form as eventForm,
+        ei.event_level as eventLevel, ei.event_content as eventContent,ei.happen_time as happenTime,
+        ei.create_time as createTime,ei.report_member_id as reportMemberId,
+        emi.pic1_path as pic1Path,emi.pic2_path as pic2Path,emi.pic3_path as pic3Path,
+        emi.video_path as videoPath,emi.file_path as filePath
+        FROM event_info ei
+		LEFT JOIN event_type_info eti ON ei.event_type_id = eti.id
+		LEFT JOIN event_media_info emi ON ei.id = emi.event_id
+		where ei.id = #{eventId}
+    </select>
+
+
+    <select id="selectAssignedTaskList" resultType="java.util.Map">
+        SELECT
+        ei.id, ei.event_name eventName, ei.event_status eventStatus, ei.event_level eventLevel,
+        ei.expire_date expireDate,ei.lng,ei.lat,ei.address,ei.happen_time happenTime,
+        edm.is_assigned isAssigned
+        FROM event_depart_member edm
+        LEFT JOIN department_member dm ON dm.id = edm.depart_member_id
+        LEFT JOIN event_info ei ON ei.id = edm.event_id
+        WHERE ei.report_status = 2
+        AND ei.is_delete = 0
+        AND dm.department_id = #{departId}
+        <if test="eventStatus!=null">
+            and ei.event_status=#{eventStatus}
+        </if>
+    </select>
+
+    <insert id="insertCatchId" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into event_info(
+        id, event_name, event_type_id, event_status, event_level, event_content, event_publisher, create_time,expire_date,
+        update_time, remark, is_delete,is_single,report_status,report_member_id,lng,lat,address,happen_time,is_need_intervene
+        )values (
+        #{id},
+        #{eventName},
+        #{eventTypeId},
+        #{eventStatus},
+        #{eventLevel},
+        #{eventContent},
+        #{eventPublisher},
+        #{createTime},
+        #{expireDate},
+        #{updateTime},
+        #{remark},
+        #{isDelete},
+        #{isSingle},
+        #{reportStatus},
+        -1,
+        #{lng},
+        #{lat},
+        #{address},
+        #{happenTime},
+        0
+        )
+    </insert>
+
+    <select id="getschedule1" resultType="java.util.Map">
+        SELECT
+	ei.id,
+	ei.create_time,
+	ei.event_publisher,
+	dm.`name`,
+	dm.title,
+	dm.head_icon headIcon 
+    FROM
+        event_info ei
+        LEFT JOIN department_member dm ON ei.report_member_id = dm.id
+    WHERE
+        ei.id = #{id}
+    </select>
+    <select id="getschedule2" resultType="java.util.Map">
+            SELECT
+        edm.assigned_time,
+        dm.`name`,
+        dm.title,
+         dm.head_icon headIcon
+    FROM
+        event_depart_member edm
+        LEFT JOIN department_member dm
+        on edm.depart_member_id=dm.id
+        where edm.event_id=#{id}
+    </select>
+    <select id="getschedule3" resultType="java.util.Map">
+            SELECT
+        mnmt.notify_time,
+        mnmt.departmember_id,
+        mnmt.event_id,
+        dm.`name`,
+        dm.title,
+         dm.head_icon headIcon
+    FROM
+        msg_notify_member_task mnmt
+        left join department_member dm
+        on mnmt.departmember_id=dm.id
+    WHERE
+        event_id =#{id}
+    </select>
+    <select id="getschedule4" resultType="java.util.Map">
+   SELECT
+	ef.create_time,
+	ef.check_time,
+	dm.`name`,
+	dm.title,
+	dm.head_icon headIcon
+    FROM
+        event_feedback ef
+        LEFT JOIN department_member dm ON ef.departmember_id = dm.id
+    WHERE
+	event_id = #{id}
+    </select>
+
+    <select id="selectPageRedoEventList" resultType="java.util.Map">
+        select
+        ei.id as eventId, ei.event_name as eventName, eti.`type_name` as typeName, ei.event_type_id as typeId,
+        ei.expire_date as expireDate,ei.event_status as eventStatus,ei.address,ei.lng,ei.lat,ei.happen_time as
+        happenTime, dm.head_icon as headIcon,
+        ei.event_level as eventLevel, ei.event_publisher as publisher, ei.create_time as createTime
+        FROM event_info ei
+        LEFT JOIN event_type_info eti on eti.id = ei.event_type_id
+        LEFT JOIN event_punish edm ON ei.id = edm.event_id
+        LEFT JOIN department_info di ON di.id = edm.exeute_depart_id
+        LEFT JOIN department_member dm ON di.leader = dm.id
+        where ei.report_status=#{reportStatus}
+        <if test="eventTypeId != null">
+            and ei.event_type_id = #{eventTypeId}
+        </if>
+        <if test="eventLevel != null">
+            and ei.event_level = #{eventLevel}
+        </if>
+        <if test="eventName != null">
+            and ei.event_name like CONCAT('%',#{eventName},'%')
+        </if>
+        <if test="departId != null">
+            AND edm.exeute_depart_id = #{departId}
+        </if>
+        <if test="eventStatus != null">
+            and ei.event_status = #{eventStatus}
+        </if>
+        <choose>
+            <when test="startTime!=null and endTime==null">
+                and ei.create_time >= #{startTime}
+            </when>
+            <when test="endTime!=null and startTime==null">
+                and ei.create_time &lt;= #{endTime}
+            </when>
+            <when test="startTime!=null and endTime!=null">
+                and ei.create_time between #{startTime} and #{endTime}
+            </when>
+        </choose>
+        order by ei.create_time desc
+    </select>
+
+</mapper>

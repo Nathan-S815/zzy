@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.warning.WarningInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.warning.WarningInfo">
+        <id column="id" property="id" />
+        <result column="address" property="address" />
+        <result column="addTime" property="addTime" />
+        <result column="describe" property="describe" />
+        <result column="longitude" property="longitude" />
+        <result column="latitude" property="latitude" />
+        <result column="file1_uid" property="file1Uid" />
+        <result column="file1_name" property="file1Name" />
+        <result column="file1_status" property="file1Status" />
+        <result column="file1_url" property="file1Url" />
+        <result column="file1_type" property="file1Type" />
+        <result column="file2_uid" property="file2Uid" />
+        <result column="file2_name" property="file2Name" />
+        <result column="file2_status" property="file2Status" />
+        <result column="file2_url" property="file2Url" />
+        <result column="file2_type" property="file2Type" />
+        <result column="file3_uid" property="file3Uid" />
+        <result column="file3_name" property="file3Name" />
+        <result column="file3_status" property="file3Status" />
+        <result column="file3_url" property="file3Url" />
+        <result column="file3_type" property="file3Type" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, address, addTime, describe,longitude,latitude, file1_uid, file1_name, file1_status, file1_url, file1_type, file2_uid, file2_name, file2_status, file2_url, file2_type, file3_uid, file3_name, file3_status, file3_url, file3_type, update_time
+    </sql>
+
+    <insert id="saveMessage">
+        insert into warning_info values (null,#{address},#{addTime},#{describe},#{longitude},#{latitude},#{nzFileModel1.uid},#{nzFileModel1.name},#{nzFileModel1.status},#{nzFileModel1.url},#{nzFileModel1.type},#{nzFileModel2.uid},#{nzFileModel2.name},#{nzFileModel2.status},#{nzFileModel2.url},#{nzFileModel2.type},#{nzFileModel3.uid},#{nzFileModel3.name},#{nzFileModel3.status},#{nzFileModel3.url},#{nzFileModel3.type},#{updateTime})
+    </insert>
+
+</mapper>
+<!--        private String uid;-->
+
+<!--        private String name;-->
+
+<!--        private String status;-->
+
+<!--        private String url;-->
+
+<!--        private String type;-->

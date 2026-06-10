@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.user.mapper.MemberTaskApplyMapper">
+
+    <resultMap id="BaseResultMap" type="com.nuwa.infrastructure.discovery.database.user.vo.MemberTaskApplyVO">
+        <result column="id" property="applyid"/>
+        <result column="task_id" property="taskId" />
+        <result column="name" property="name" />
+        <result column="user_nike" property="createByName" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by_name" property="createByName" />
+        <result column="video" property="video" />
+        <result column="weight" property="weight" />
+    </resultMap>
+
+    <select id="selectApplyPage" resultMap="BaseResultMap">
+        SELECT  mta.id,mta.task_id,st.name,mta.create_by_id,mta.create_time, mta.weight,mta.video, meb.user_nike
+        FROM  member_task_apply mta
+          LEFT JOIN(SELECT id,name FROM scenic_task) st  ON st.id = mta.task_id
+          LEFT JOIN(SELECT user_nike,user_id FROM member) meb  ON meb.user_id = mta.create_by_id
+        WHERE 1 = 1  AND  mta.video IS NOT NULL
+        <if test="name != null and name != ''">
+            AND st.name like concat(concat('%',#{name}),'%')
+        </if>
+        <if test="taskId != null and taskId != ''">
+            AND mta.task_id = #{taskId}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            <![CDATA[ AND mta.create_time >= DATE_FORMAT(#{beginDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND mta.create_time <= DATE_FORMAT(#{endDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+         ORDER BY  mta.weight ASC , mta.create_time DESC
+    </select>
+</mapper>

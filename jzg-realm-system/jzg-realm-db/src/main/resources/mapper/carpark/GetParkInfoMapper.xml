@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.carpark.GetParkInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.carpark.GetParkInfo">
+        <id column="index_id" property="indexId" />
+        <result column="park_key" property="parkKey" />
+        <result column="park_name" property="parkName" />
+        <result column="scenic_name" property="scenicName" />
+        <result column="park_latitude" property="parkLatitude" />
+        <result column="park_longitude" property="parkLongitude" />
+        <result column="park_add" property="parkAdd" />
+        <result column="park_tel" property="parkTel" />
+        <result column="park_linkman" property="parkLinkman" />
+        <result column="park_freetime" property="parkFreetime" />
+        <result column="park_freetime_out" property="parkFreetimeOut" />
+        <result column="charge_sdesc" property="chargeSdesc" />
+        <result column="reserve_status" property="reserveStatus" />
+        <result column="reg_time" property="regTime" />
+        <result column="valid_time" property="validTime" />
+        <result column="space_total" property="spaceTotal" />
+        <result column="city_short_name" property="cityShortName" />
+        <result column="car_type_charg_rules" property="carTypeChargRules" />
+        <result column="parkqrcode_url" property="parkqrcodeUrl" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="warning_time" property="warningTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        index_id, park_key, park_name,scenic_name, park_latitude, park_longitude, park_add, park_tel, park_linkman, park_freetime, park_freetime_out, charge_sdesc, reserve_status, reg_time, valid_time, space_total, city_short_name, car_type_charg_rules, parkqrcode_url
+        ,create_time,update_time,warning_time
+    </sql>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into get_park_info (index_id, park_key, park_name,scenic_name, park_latitude, park_longitude, park_add, park_tel, park_linkman, park_freetime, park_freetime_out, charge_sdesc, reserve_status, reg_time, valid_time, space_total, city_short_name, car_type_charg_rules, parkqrcode_url
+        ,create_time,update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.indexId},
+            #{item.parkKey},
+            #{item.parkName},
+            #{item.scenicName},
+            #{item.parkLatitude},
+            #{item.parkLongitude},
+            #{item.parkAdd},
+            #{item.parkTel},
+            #{item.parkLinkman},
+            #{item.parkFreetime},
+            #{item.parkFreetimeOut},
+            #{item.chargeSdesc},
+            #{item.reserveStatus},
+            #{item.regTime},
+            #{item.validTime},
+            #{item.spaceTotal},
+            #{item.cityShortName},
+            #{item.carTypeChargRules},
+            #{item.parkqrcodeUrl},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+        on duplicate key update
+        space_total = values(space_total),
+        park_freetime = values(park_freetime),
+        park_freetime_out = values(park_freetime_out),
+        park_linkman = values(park_linkman),
+        update_time = sysdate()
+    </insert>
+
+</mapper>

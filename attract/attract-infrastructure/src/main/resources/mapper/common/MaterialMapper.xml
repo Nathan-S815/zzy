@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.common.mapper.MaterialMapper">
+
+    <select id="qryRewardList" resultType="com.nuwa.infrastructure.vo.MaterialVO">
+        select id, mch_id, file_type, target_type, url, real_name,status
+        from material
+        where
+           target_type = #{fileTarget}
+          and status != '3'
+    </select>
+</mapper>
+

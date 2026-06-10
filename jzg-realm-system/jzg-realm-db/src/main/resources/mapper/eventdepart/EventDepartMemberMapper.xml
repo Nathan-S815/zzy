@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.EventDepartMemberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.EventDepartMember">
+        <id column="event_id" property="eventId" />
+        <result column="depart_member_id" property="departMemberId" />
+        <result column="is_notify" property="isNotify" />
+        <result column="is_assigned" property="isAssigned" />
+        <result column="assigned_time" property="assignedTime" />
+        <result column="notify_time" property="notifyTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into event_depart_member (event_id, depart_member_id, is_notify,
+        is_assigned, assigned_time, notify_time,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.eventId,jdbcType=INTEGER},
+            #{item.departMemberId,jdbcType=INTEGER},
+            #{item.isNotify,jdbcType=INTEGER},
+            #{item.isAssigned,jdbcType=INTEGER},
+            #{item.assignedTime,jdbcType=TIMESTAMP},
+            #{item.notifyTime,jdbcType=TIMESTAMP},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+        on duplicate key update
+        create_time = sysdate()
+    </insert>
+
+    <select id="selectByPk" resultMap="BaseResultMap">
+        select event_id,depart_member_id,is_notify,is_assigned,assigned_time,notify_time,create_time
+        from event_depart_member
+        where event_id = #{eventId}
+        and depart_member_id = #{departMemberId}
+    </select>
+
+
+    <select id="selectByDepartIdWithEventId" resultMap="BaseResultMap">
+        SELECT
+        edm.*
+        FROM event_info ei
+        LEFT JOIN event_depart_member edm ON ei.id = edm.event_id
+        LEFT JOIN department_info di ON edm.depart_member_id = di.leader AND di.id = #{departId}
+        WHERE ei.id = #{eventId}
+    </select>
+
+
+</mapper>

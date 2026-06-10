@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.user.mapper.MemberMapper">
+
+
+    <select id="getMemberExaminePageVO" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberExaminePageVO">
+        SELECT
+            a.user_id, a.user_number,
+            a.mch_id as mchId,
+            a.user_phone, a.user_nike,
+            b.nick, b.account_id,
+            b.fans_count, b.region,
+            b.status, b.update_time,
+            b.level,
+            b.id as memberAccountBindId, b.recertification_status as recertificationStatus
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        <where>
+            a.user_phone is not null
+            <if test="params.thirdPartyType != null and params.thirdPartyType != ''">
+                AND b.channel_code = #{params.thirdPartyType}
+            </if>
+            <if test="params.mobile != null and params.mobile != ''">
+                AND a.user_phone like concat('%',#{params.mobile},'%')
+            </if>
+            <if test="params.thirdPartyAccount != null and params.thirdPartyAccount != ''">
+                AND b.account_id = #{params.thirdPartyAccount}
+            </if>
+            <if test="params.userNike != null and params.userNike != ''">
+                AND a.user_nike like concat('%',#{params.userNike},'%')
+            </if>
+            <if test="params.thirdPartyNick != null and params.thirdPartyNick != ''">
+                AND b.nick like concat('%',#{params.thirdPartyNick},'%')
+            </if>
+            <if test="params.status != null">
+                AND b.status = #{params.status}
+            </if>
+            <if test="params.createTimeStart != null and params.createTimeEnd != null">
+                AND <![CDATA[#{params.createTimeStart} <= b.create_time AND b.create_time < #{params.createTimeEnd} ]]>
+            </if>
+        </where>
+        order by b.create_time desc
+
+    </select>
+
+
+
+    <select id="getMemberMerchantPageVO" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberMerchantPageVO">
+        SELECT
+            a.user_id, a.user_number,
+            a.user_phone, a.user_nike,
+            a.mch_id as mchId,
+            a.gmv,a.integral,
+            a.user_level_id as userLevelId, b.update_time as updateTime,
+            b.nick, b.account_id,
+            b.fans_count, b.region,
+            b.status, b.create_time,
+            b.id as memberAccountBindId,
+            c.level_name as levelName
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        LEFT JOIN member_integral_level c ON a.user_level_id = c.level
+        <where>
+            a.user_phone is not null
+            AND b.status = 1
+            <if test="params.thirdPartyType != null and params.thirdPartyType != ''">
+                AND b.channel_code = #{params.thirdPartyType}
+            </if>
+            <if test="params.userNike != null and params.userNike != ''">
+                AND a.user_nike like concat('%',#{params.userNike},'%')
+            </if>
+            <if test="params.level != null">
+                AND a.user_level_id = #{params.level}
+            </if>
+            <if test="params.mobile != null and params.mobile != ''">
+                AND a.user_phone like concat('%',#{params.mobile},'%')
+            </if>
+            <if test="params.mchId != null and params.mchId != ''">
+                AND a.mch_id = #{params.mchId}
+            </if>
+            <if test="params.createTimeStart != null and params.createTimeEnd != null">
+                AND <![CDATA[#{params.createTimeStart} <= b.create_time AND b.create_time < #{params.createTimeEnd} ]]>
+            </if>
+        </where>
+        ORDER BY  b.create_time DESC
+    </select>
+
+
+
+    <select id="getMemberMerchantVO" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberMerchantPageVO">
+        SELECT
+            a.user_id, a.user_number,
+            a.user_phone, a.user_nike,
+            a.gmv,a.integral,
+            a.user_level_id as userLevelId, b.update_time as updateTime,
+            b.nick, b.account_id,
+            b.fans_count, b.region,
+            b.status, b.create_time,
+            b.id as memberAccountBindId,
+            c.level_name as levelName,
+            a.user_img
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        LEFT JOIN member_integral_level c ON a.user_level_id = c.level
+        WHERE
+            a.user_id = #{userId}
+
+    </select>
+
+    <select id="getCurrentMember" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberVO">
+        SELECT
+            a.user_nike as userNike,a.user_img as userImg,
+            a.user_id as userId,a.integral,
+            a.mch_id as mchId,
+            a.user_level_id as userLevelId,a.user_phone as userPhone,
+            b.recertification_status as recertificationStatus,b.invite_code as inviteCode,
+            c.level_name as levelName
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        LEFT JOIN member_integral_level c ON a.user_level_id = c.level
+        WHERE
+            a.user_id = #{memberId}
+    </select>
+
+    <select id="getBannerMember" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberVO">
+        SELECT
+            a.user_nike as userNike,a.user_img as userImg,
+            a.user_id as userId
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        ORDER BY b.fans_count desc
+        LIMIT 45
+    </select>
+
+    <select id="getMemberVOByUserId" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberVO">
+        SELECT
+            a.user_id as userId, a.user_level_id as userLevelId,
+            b.sex,b.region,
+            c.level_name as levelName
+        FROM
+            member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        LEFT JOIN member_integral_level c ON a.user_level_id = c.level
+        WHERE a.user_id = #{userId}
+    </select>
+
+    <select id="getMemberRankVO" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberRankVO">
+        SELECT
+            a.user_nike as userNike,a.user_img as userImg,
+            a.user_level_id as userLevelId,
+            b.level_name as userLevelName
+        FROM member a
+        LEFT JOIN member_integral_level b ON a.user_level_id = b.level
+        ORDER BY a.integral desc
+        LIMIT 10
+    </select>
+
+    <select id="getMemberRankDataVOByMchId" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MemberRankDataVO">
+        SELECT
+            a.user_nike as userNike,
+            b.fans_count as fansCount
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        WHERE a.mch_id = #{mchId}
+        ORDER BY b.fans_count desc
+        LIMIT 10
+    </select>
+
+
+    <select id="sexCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        WHERE a.mch_id = #{mchId}  AND b.sex = #{sex}
+    </select>
+
+    <select id="getTotalGMV" resultType="java.lang.Long">
+        SELECT
+            sum(gmv)
+        FROM member
+        WHERE mch_id = #{mchId}
+    </select>
+
+    <select id="getTotalFans" resultType="java.lang.Long">
+        SELECT
+            sum(b.fans_count)
+        FROM member a
+        LEFT JOIN member_account_bind b ON a.user_id = b.user_id
+        WHERE a.mch_id = #{mchId}
+    </select>
+
+
+    <select id="getTotalVideo" resultType="java.lang.Long">
+        SELECT
+            count(*)
+        FROM (SELECT * FROM member_task_apply WHERE user_id in (SELECT user_id FROM member WHERE mch_id = #{mchId})) a
+        LEFT JOIN member b ON a.user_id = b.user_id
+        WHERE b.mch_id = #{mchId} AND a.video is not null
+    </select>
+
+    <select id="selectGreateList" resultType="com.nuwa.infrastructure.discovery.database.user.vo.GreateVideoVO">
+        SELECT mta.video,mta.weight FROM member_task_apply  mta
+        LEFT JOIN member b ON mta.user_id = b.user_id
+        WHERE mta.video IS NOT NULL AND  b.mch_id = #{mchId}
+        ORDER BY mta.weight ASC,mta.create_time DESC
+    </select>
+</mapper>

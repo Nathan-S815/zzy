@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.carpark.GetRemainingSpaceHMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.carpark.GetRemainingSpaceH">
+        <id column="id" property="id" />
+        <result column="remai_spaces" property="remaiSpaces" />
+        <result column="total_spaces" property="totalSpaces" />
+        <result column="park_key" property="parkKey" />
+        <result column="get_time" property="getTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, remai_spaces, total_spaces, park_key, get_time,create_time,update_time
+    </sql>
+
+
+    <select id="getAllScenicPark" resultType="java.util.Map">
+        select sum(remai_spaces) as remaispaces,sum(total_spaces) as totalspaces,get_park_info.scenic_name as scenic_name
+            from get_remaining_space join get_park_info
+            where get_park_info.park_key = get_remaining_space.park_key
+            group by get_park_info.scenic_name
+    </select>
+
+    <select id="getAllScenicParkScreen" resultType="java.util.Map">
+        select remai_spaces as remaispaces,total_spaces as totalspaces,get_park_info.park_name as scenic_name ,warning_time as warningTime
+            from get_remaining_space join get_park_info
+            where get_park_info.park_key = get_remaining_space.park_key
+    </select>
+
+    <select id="getParkByScenic" resultType="java.util.Map">
+        select remai_spaces, total_spaces, park_name
+            from get_remaining_space join get_park_info
+            where get_park_info.park_key = get_remaining_space.park_key and scenic_name like concat('%',#{scenicName},'%')
+    </select>
+
+    <select id="selectOneByInfo" resultMap="BaseResultMap">
+        select  id, remai_spaces, total_spaces, park_key, get_time,create_time,update_time
+        from get_remaining_space_h where
+        park_key = #{parkKey}
+        and get_time = #{getTime}
+    </select>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into get_remaining_space_h (id, remai_spaces, total_spaces, park_key, get_time,create_time,update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.remaiSpaces},
+            #{item.totalSpaces},
+            #{item.parkKey},
+            #{item.getTime},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+        on duplicate key update
+        remai_spaces = values(remai_spaces),
+        total_spaces = values(total_spaces),
+        update_time = sysdate()
+    </insert>
+
+
+
+</mapper>

@@ -1,0 +1,96 @@
+package ${cfg.pageParamPackage};
+
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import ${cfg.entityPackage};
+import ${cfg.pageQryPackage};
+import java.util.Objects;
+
+import com.nuwa.framework.database.PageQry;
+
+/**
+ * <pre>
+ * $!{table.comment} 分页参数对象
+ * </pre>
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(value = "$!{table.comment}分页参数")
+public class ${entity}${cfg.pageParam} extends PageQry<${entity}> {
+    private static final long serialVersionUID = 1L;
+
+    private ${entity}PageQry qry;
+
+    public ${entity}${cfg.pageParam}(${entity}PageQry qry) {
+        super(qry);
+        this.qry = qry;
+    }
+
+    @Override
+    public LambdaQueryWrapper<${entity}> toQueryWrapper() {
+        LambdaQueryWrapper<${entity}> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.select(${entity}.class,
+                t -> !t.getColumn().endsWith("_editor")
+    #foreach($field in ${table.fields})
+        #if($field.comment.matches(".*\[i_list\].*"))
+                        && !t.getColumn().equalsIgnoreCase(${entity}.${field.name.toUpperCase()})
+        #end
+    #end
+        );
+    ## ----------  BEGIN 字段循环遍历  ----------
+    #foreach($field in ${table.fields})
+        #set($isJump="0")
+        #if($field.propertyName == 'userId' && $field.comment.indexOf("[q_eq]") != -1)
+    queryWrapper.eq(Objects.nonNull(qry.getUserAware().getUserId()), ${entity}::getUserId, qry.getUserAware().getUserId());
+            #set($isJump="1")
+        #end
+        #if($field.propertyName == 'mchId' && $field.comment.indexOf("[q_eq]") != -1)
+        queryWrapper.eq(Objects.nonNull(qry.getUserAware().getMchId()), ${entity}::getMchId, qry.getUserAware().getMchId());
+            #set($isJump="1")
+        #end
+        #if($field.comment!= '' && $isJump != "1")
+            #if($field.propertyType == 'String')
+                #set($checkerFun="!StrUtil.isBlankOrUndefined")
+            #end
+            #if($field.propertyType == 'Long' || $field.propertyType == 'Integer'|| $field.propertyType == 'Date')
+                #set($checkerFun="Objects.nonNull")
+            #end
+            #if($field.comment.indexOf("[q_eq]") != -1)
+        queryWrapper.eq(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_like]") != -1)
+        queryWrapper.like(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_gt]") != -1)
+        queryWrapper.gt(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_ge]") != -1)
+        queryWrapper.ge(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_lt]") != -1)
+        queryWrapper.lt(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_le]") != -1)
+        queryWrapper.le(${checkerFun}(qry.get${field.capitalName}()), ${entity}::get${field.capitalName}, qry.get${field.capitalName}());
+            #end
+            #if($field.comment.indexOf("[q_between]") != -1)
+                #set($start="Start")
+                #set($end="End")
+        queryWrapper.between(${checkerFun}(qry.get${field.capitalName}${start}()) && !StrUtil.isBlankOrUndefined(qry.get${field.capitalName}${end}()), ${entity}::get${field.capitalName},qry.get${field.capitalName}${start}(),qry.get${field.capitalName}${end}());
+            #end
+        #end
+    #end
+    ## ----------  END 字段循环遍历  ----------
+    return queryWrapper;
+    }
+}

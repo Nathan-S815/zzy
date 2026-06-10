@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.MerchantTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.MerchantType">
+        <id column="id" property="id" />
+        <result column="type_name" property="typeName" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type_name, type_code,create_time
+    </sql>
+    <insert id="addBaseInfoByName">
+     insert into report_base_${tableName} (id, ${tableName}_name, create_time, is_delete, audit_state, user_id)
+    values (#{id,jdbcType=INTEGER}, #{spotName,jdbcType=VARCHAR}, sysdate(), 0, 0, #{userId,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateBaseMerchantInfo">
+        update report_base_${tableName}
+        set user_id = #{userId}
+        where ${tableName}_name = #{spotName,jdbcType=VARCHAR}
+    </update>
+
+    <update id="delMerchantInfo">
+        update report_base_${tableName}
+        set is_delete = 1
+        where id = #{baseId}
+    </update>
+
+
+    <select id="selectBaseSpotInfoByName" resultType="java.util.Map">
+        select  id, ${tableName}_name as baseName, address, ${tableName}_phone phone, contact_people contactPeople,
+        contact_phone contactPhone, business_license businessLicense, legal_person legalPerson,
+         legal_idcard legalIdcard, create_time createTime
+        from report_base_${tableName}
+        where is_delete = 0 and ${tableName}_name = #{spotName}
+    </select>
+
+    <select id="selectMerchantTypeCodeByRoleName" resultType="java.lang.String">
+        select type_code from merchant_type where type_name in
+        <foreach collection="roles" item="role" index="index" open="(" close=")" separator=",">
+            #{role}
+        </foreach>
+    </select>
+
+    <select id="selectBaseInfoIdByNameAndUserId" resultType="java.util.Map">
+    select id,audit_state as auditState, ${tableName}_name as baseName from report_base_${tableName}
+    where user_id = ${userId} and is_delete = 0
+  </select>
+
+</mapper>

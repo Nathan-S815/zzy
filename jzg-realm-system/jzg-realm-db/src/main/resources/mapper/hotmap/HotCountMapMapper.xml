@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.hotmap.HotCountMapMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.hotmap.HotCountMap">
+        <id column="id" property="id" />
+        <result column="date_log" property="dateLog" />
+        <result column="location_name" property="locationName" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
+        <result column="count" property="count" />
+        <result column="address" property="address" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, date_log, location_name, lng, lat, count, address, create_time, update_time
+    </sql>
+
+</mapper>

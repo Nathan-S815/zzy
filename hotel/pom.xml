@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.nuwa.application</groupId>
+        <artifactId>application.all</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>hotel-project</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>hotel-project</name>
+
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <mybatis-plus-boot-starter.version>3.2.0</mybatis-plus-boot-starter.version>
+        <cn.hutool.version>5.4.2</cn.hutool.version>
+        <projectlombok.version>1.18.20</projectlombok.version>
+        <swagger.version>1.5.21</swagger.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
+        <cola.framework.version>3.1.0</cola.framework.version>
+        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
+    </properties>
+
+    <modules>
+        <module>hotel-client</module>
+        <module>hotel-app</module>
+        <module>hotel-infrastructure</module>
+        <module>hotel-start</module>
+        <module>hotel-generator</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.nuwa.application</groupId>
+                <artifactId>application.all</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <!--Framework-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2.1.1.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-dependencies</artifactId>
+                <version>2.1.5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>cola-common</artifactId>
+                <version>${cola.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>cola-core</artifactId>
+                <version>${cola.framework.version}</version>
+            </dependency>
+            <!--Framework End-->
+
+            <!--Project modules-->
+            <dependency>
+                <groupId>com.nuwa.framework</groupId>
+                <artifactId>nuwa-framework-base</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nuwa.framework</groupId>
+                <artifactId>nuwa-framework-database</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <!--Project modules-->
+
+            <dependency>
+                <groupId>com.nuwa.applicatio</groupId>
+                <artifactId>payment-controller</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nuwa.applicatio</groupId>
+                <artifactId>payment-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>tomcat-jdbc</artifactId>
+                        <groupId>org.apache.tomcat</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${cn.hutool.version}</version>
+            </dependency>
+
+            <!-- Misc -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.22</version>
+            </dependency>
+            <!-- Misc End -->
+
+        </dependencies>
+    </dependencyManagement>
+
+
+
+</project>

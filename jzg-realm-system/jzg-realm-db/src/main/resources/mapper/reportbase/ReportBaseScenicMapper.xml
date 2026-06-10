@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportbase.ReportBaseScenicMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.reportbase.ReportBaseScenic">
+        <id column="id" property="id" />
+        <result column="scenic_name" property="scenicName" />
+        <result column="address" property="address" />
+        <result column="scenic_phone" property="scenicPhone" />
+        <result column="contact_people" property="contactPeople" />
+        <result column="contact_phone" property="contactPhone" />
+        <result column="business_license" property="businessLicense" />
+        <result column="legal_person" property="legalPerson" />
+        <result column="legal_idcard" property="legalIdcard" />
+        <result column="create_time" property="createTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="audit_state" property="auditState" />
+        <result column="user_id" property="userId" />
+        <result column="grade" property="grade" />
+        <result column="lat" property="lat" />
+        <result column="lng" property="lng" />
+        <result column="max_bearing" property="maxBearing" />
+        <result column="warning_value" property="warningValue" />
+        <result column="now_people" property="nowPeople" />
+        <result column="legal_photo" property="legalPhoto" />
+        <result column="abbreviation" property="abbreviation" />
+        <result column="warning_time" property="warningTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, scenic_name, abbreviation,address, scenic_phone, contact_people, contact_phone, business_license, legal_person, legal_idcard, create_time, is_delete, audit_state, user_id
+        ,grade,lat,lng,max_bearing,warning_value,now_people,legal_photo,warning_time
+    </sql>
+
+    <select id="selectPageListBaseScenic" resultMap="BaseResultMap">
+          SELECT * FROM report_base_scenic
+	where scenic_name like concat('%',#{keyword},'%')
+    </select>
+
+    <select id="selectBaseSpotListByPara" resultType="java.util.Map">
+        select
+        rb.id as baseId, ${tableName}_name as baseName, address, ${tableName}_phone phone , contact_people contactPeople,
+        contact_phone contactPhone, business_license businessLicense, legal_person legalPerson, legal_idcard legalIdcard,
+        rb.create_time createTime, audit_state auditState, user_id userId,ui.is_enable as isloginAccountEnable,ui.user_name as loginName,
+        ull.login_number as loginCount,grade,lat,lng,max_bearing maxBearing,
+        warning_value warningValue,now_people nowPeople
+        from report_base_${tableName} rb
+        LEFT JOIN security_login.user_info ui ON rb.user_id = ui.id
+        LEFT JOIN security_login.user_login_log ull ON ui.user_name= ull.user_name
+        where rb.is_delete = 0
+        <if test="keyWord != null ">
+            and (${tableName}_name like concat('%',#{keyWord},'%') or rb.id like concat('%',#{keyWord},'%') or address like concat('%',#{keyWord},'%') or ${tableName}_phone like concat('%',#{keyWord},'%')
+            or contact_people like concat('%',#{keyWord},'%') or contact_phone like concat('%',#{keyWord},'%'))
+        </if>
+    </select>
+
+    <select id="getIdByName" resultMap="BaseResultMap">
+        select * from report_base_scenic where scenic_name like concat('%',#{name},'%')
+    </select>
+
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.security.lib.dao.UserRoleMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.security.lib.entity.UserRole">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="creation_time" jdbcType="TIMESTAMP" property="creationTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, role_id, creation_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.zzy.security.lib.entity.UserRole">
+    insert into user_role (id, user_id, role_id,
+      creation_time)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}, 
+      #{creationTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.security.lib.entity.UserRole">
+    insert into user_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="creationTime != null">
+        creation_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="creationTime != null">
+        #{creationTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.security.lib.entity.UserRole">
+    update user_role
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="creationTime != null">
+        creation_time = #{creationTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.security.lib.entity.UserRole">
+    update user_role
+    set user_id = #{userId,jdbcType=INTEGER},
+      role_id = #{roleId,jdbcType=INTEGER},
+      creation_time = #{creationTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+
+
+
+  <!--  ***************************************custom method*************************************************  -->
+
+  <select id="selectRoleByUserId" parameterType="java.lang.Integer"  resultType="java.lang.String">
+        select
+		role_name
+		from role_info r
+		LEFT JOIN user_role ur ON r.id = ur.role_id
+		where ur.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+    <select id="selectRolesByUserId" resultType="com.zzy.security.lib.entity.RoleInfo">
+      select
+      ri.id, ri.role_name roleName,ri.role_code roleCode, ri.is_enable isEnable, ri.create_time createTime
+      from role_info ri
+      left join user_role ur on ri.id = ur.role_id
+      where ur.user_id = #{userId}
+    </select>
+
+    <insert id="upsert"  parameterType="java.util.Map">
+    insert into user_role (id, user_id, role_id, creation_time)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER},
+      sysdate())
+    on duplicate key update
+    creation_time = values(creation_time)
+  </insert>
+
+
+    <delete id="deleteByUniqueKey"  parameterType="java.util.Map">
+        delete from user_role
+    where user_id = #{userId,jdbcType=INTEGER}
+    and
+      role_id = #{roleId,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByRoleId">
+              delete from user_role
+    where
+      role_id = #{roleId,jdbcType=INTEGER}
+    </delete>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into user_role (id, user_id, role_id, creation_time)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.id,jdbcType=INTEGER},
+      #{item.userId,jdbcType=INTEGER},
+      #{item.roleId,jdbcType=INTEGER},
+      sysdate()
+      )
+    </foreach>
+  </insert>
+
+
+
+  <delete id="deleteByUserId">
+    delete from user_role
+    where
+     user_id = #{userId,jdbcType=INTEGER}
+     and role_id !=1
+    </delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

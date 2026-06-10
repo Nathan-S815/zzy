@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseGuideReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseGuideReport">
+        <id column="id" property="id" />
+        <result column="guide_id" property="guideId" />
+        <result column="credit" property="credit" />
+        <result column="reason" property="reason" />
+        <result column="type" property="type" />
+        <result column="score" property="score" />
+        <result column="report_time" property="reportTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, guide_id, credit,reason, type, score, report_time, create_time
+    </sql>
+    <select id="selectPageListBaseGuideReport" resultType="java.util.Map">
+        SELECT * from report_base_guide where is_delete = 0
+        <if test="keyword!=null">
+            and (guide_name like concat('%',#{keyword},'%') or guide_license_number like concat('%',#{keyword},'%')
+            or credit like concat('%',#{keyword},'%') or update_time like concat('%',#{keyword},'%')
+            )
+        </if>
+
+    </select>
+    <select id="getBaseGuideReportByGuideId" resultType="java.util.Map">
+    select b.id id,
+		guide_id,
+		reason, type, score, b.report_time report_time, b.create_time create_time,guide_name,r.credit credit from base_guide_report b left join report_base_guide r on b.guide_id = r.id
+        order by b.report_time desc
+    </select>
+
+</mapper>

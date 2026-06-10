@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tessss</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+</head>
+<body>
+<button onclick="downLoad()" type="button" class="btn btn-default">导出Excel</button>
+<script>
+/*    function downLoad(){
+        window.location.href ="http://localhost:8082/excel/getExcelPtFormHouseVO";
+    }*/
+// $(function () {
+    function downLoad() {
+        var req = "";
+        $.ajax({
+            type: "post",  // 请求方式
+            url: "https://cashier.sandpay.com.cn/gw/web/order/create",  // 目标资源
+            dataType: "json",  // 服务器响应的数据类型
+            success: function (data) {  // readystate == 4 && status == 200
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+// })
+</script>
+
+</body>
+</html>

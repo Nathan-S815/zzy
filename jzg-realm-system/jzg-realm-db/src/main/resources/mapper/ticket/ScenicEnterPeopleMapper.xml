@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.ticket.ScenicEnterPeopleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.ticket.ScenicEnterPeople">
+        <id column="id" property="id"/>
+        <result column="api_id" property="apiId"/>
+        <result column="name" property="name"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="enter_number" property="enterNumber"/>
+        <result column="rest_number" property="restNumber"/>
+        <result column="income" property="income"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, api_id, `name`, record_date, enter_number, rest_number,income, create_time, update_time
+    </sql>
+
+    <select id="getLatestScenicEnterPeople" resultMap="BaseResultMap">
+        select *
+        from (select *
+                from scenic_enter_people
+                where name = '九寨沟' or name = '古藏寨' or name = '甲勿海' or name = '嫩恩桑措(神仙池)' or name = '爱情海(甘海子)' or name = '甲勿海大熊猫保护研究园'
+                ORDER BY record_date desc limit 1000) a
+        GROUP BY name
+    </select>
+
+    <insert id="insertScenicEnterPeople">
+        insert into scenic_enter_people values(null,null,#{name},#{recordDate},#{enterNumber},#{restNumber},#{income},#{recordDate},#{recordDate})
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into scenic_enter_people (id, api_id, `name`, record_date, enter_number, rest_number, income,create_time,
+        update_time
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.apiId},
+            #{item.name},
+            #{item.recordDate},
+            #{item.enterNumber},
+            #{item.restNumber},
+            <choose>
+                <when test="item.income == null and item.name == '九寨沟'">
+                    #{item.enterNumber}*259,
+                </when>
+                <when test="item.income == null and item.name == '四姑娘山'">
+                    #{item.enterNumber}*100,
+                </when>
+                <otherwise>
+                    #{item.income},
+                </otherwise>
+            </choose>
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+        on duplicate key update
+        enter_number = values(enter_number),
+        rest_number = values(rest_number),
+        update_time = sysdate()
+    </insert>
+
+    <select id="selectOneByInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from scenic_enter_people
+        where api_id = #{apiId} and record_date = #{recordDate}
+    </select>
+
+    <select id="getAllTouristNumberByTime" resultType="java.lang.Integer">
+        select sum(enter_number) as num
+        from scenic_enter_people
+        where (name = '九寨沟' or name = '古藏寨' or name = '甲勿海' or name = '嫩恩桑措(神仙池)' or name = '爱情海(甘海子)' or name = '甲勿海大熊猫保护研究园')
+        and record_date between #{startTime} and #{endTime}
+    </select>
+</mapper>

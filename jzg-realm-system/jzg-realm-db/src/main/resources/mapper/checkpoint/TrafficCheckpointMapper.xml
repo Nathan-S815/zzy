@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.checkpoint.TrafficCheckpointMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.checkpoint.TrafficCheckpoint">
+        <id column="id" property="id" />
+        <result column="row_id" property="rowId" />
+        <result column="vehicle_id" property="vehicleId" />
+        <result column="vehicle_type" property="vehicleType" />
+        <result column="vehicle_color" property="vehicleColor" />
+        <result column="speed_value" property="speedValue" />
+        <result column="speed_type" property="speedType" />
+        <result column="vehicle_brand" property="vehicleBrand" />
+        <result column="plate_number" property="plateNumber" />
+        <result column="plate_type" property="plateType" />
+        <result column="move_direction" property="moveDirection" />
+        <result column="create_time" property="createTime" />
+        <result column="is_intown" property="isIntown" />
+        <result column="is_delete" property="isDelete" />
+        <result column="update_time" property="updateTime" />
+        <result column="alarm_description" property="alarmDescription" />
+        <result column="alarm_time" property="alarmTime" />
+        <result column="alarm_sequence" property="alarmSequence" />
+        <result column="alarm_name" property="alarmName" />
+        <result column="alarm_type" property="alarmType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, row_id, vehicle_id, vehicle_type, vehicle_color, speed_value, speed_type, vehicle_brand, plate_number, plate_type, move_direction, create_time, is_intown, is_delete, update_time, alarm_description, alarm_time, alarm_sequence, alarm_name, alarm_type
+    </sql>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into traffic_checkpoint (id, row_id, vehicle_id, vehicle_type, vehicle_color, speed_value, speed_type, vehicle_brand,
+        plate_number, plate_type, move_direction, create_time, is_intown, is_delete, update_time, alarm_description, alarm_time,
+        alarm_sequence, alarm_name, alarm_type
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.rowId},
+            #{item.vehicleId},
+            #{item.vehicleType},
+            #{item.vehicleColor},
+            #{item.speedValue},
+            #{item.speedType},
+            #{item.vehicleBrand},
+            #{item.plateNumber},
+            #{item.plateType},
+            #{item.moveDirection},
+            #{item.createTime},
+            #{item.isIntown},
+            #{item.isDelete},
+            #{item.updateTime},
+            #{item.alarmDescription},
+            #{item.alarmTime},
+            #{item.alarmSequence},
+            #{item.alarmName},
+            #{item.alarmType}
+            )
+        </foreach>
+        on duplicate key update
+        update_time = sysdate()
+    </insert>
+
+    <select id="getVehicleOrigin" resultType="java.util.Map">
+        select count(province) num,province
+        from traffic_checkpoint left join traffic_province on left(plate_number,1)=province_short
+        where create_time between #{startTime} and #{endTime}
+        <if test="checkPointName != null">
+          and alarm_name like concat(#{checkPointName},'%')
+        </if>
+        group by province
+        order by num desc
+    </select>
+
+
+
+</mapper>

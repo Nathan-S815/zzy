@@ -1,0 +1,41 @@
+package com.nuwa.infrastructure.zeus.database.app.query;
+
+
+import com.nuwa.framework.database.tk.join.annotation.JoinColumn;
+import com.nuwa.framework.database.tk.join.query.BaseJoinListQuery;
+import com.nuwa.framework.database.tk.join.wrappper.JoinQueryBuilder;
+import com.nuwa.infrastructure.zeus.database.mch.entity.MerchantApp;
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+/**
+ * <pre>
+ * 商户应用 分页参数对象
+ * </pre>
+ *
+ * @author huyonghack@163.com
+ * @date 2021-06-03
+ */
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(value = "获取商户应用列表参数")
+public class ListAppByJoinQuery extends BaseJoinListQuery<ListAppByJoinQuery> {
+    private static final long serialVersionUID = 1L;
+
+    @JoinColumn(tableClass = MerchantApp.class)
+    private String appName;
+
+    @JoinColumn(tableClass = MerchantApp.class)
+    private Integer appType;
+
+    @JoinColumn(tableClass = MerchantApp.class)
+    private Integer status;
+
+    @Override
+    public void where(JoinQueryBuilder<ListAppByJoinQuery> wrapper) {
+        wrapper.eq(ListAppByJoinQuery::getAppName, this.getAppName());
+    }
+}

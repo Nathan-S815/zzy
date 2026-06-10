@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="baseMapper">
+    <sql id="CONSTANT_WHERE">
+    </sql>
+
+    <sql id="CRITERIA_SQL">
+        <if test="criteria.valid">
+            <trim prefix="(" prefixOverrides="and" suffix=")">
+                <foreach collection="criteria.criteria" item="criterion">
+                    <choose>
+                        <when test="criterion.noValue">
+                            and ${criterion.condition}
+                        </when>
+                        <when test="criterion.singleValue">
+                            and ${criterion.condition} #{criterion.value}
+                        </when>
+                        <when test="criterion.betweenValue">
+                            and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                        </when>
+                        <when test="criterion.listValue">
+                            and ${criterion.condition}
+                            <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                #{listItem}
+                            </foreach>
+                        </when>
+                        <when test="criterion.orValue and criterion.andOrCriterias.size > 0">
+                            and
+                            <trim prefix="(" prefixOverrides="or" suffix=")">
+                                <foreach collection="criterion.andOrCriterias" item="criterion">
+                                    <choose>
+                                        <when test="criterion.noValue">
+                                            or ${criterion.condition}
+                                        </when>
+                                        <when test="criterion.singleValue">
+                                            or ${criterion.condition} #{criterion.value}
+                                        </when>
+                                        <when test="criterion.betweenValue">
+                                            or ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                        </when>
+                                        <when test="criterion.listValue">
+                                            or ${criterion.condition}
+                                            <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                     separator=",">
+                                                #{listItem}
+                                            </foreach>
+                                        </when>
+                                    </choose>
+                                </foreach>
+                            </trim>
+                        </when>
+                    </choose>
+                </foreach>
+            </trim>
+        </if>
+    </sql>
+
+    <sql id="SIMPLE_PAGE_WHERE">
+        <where>
+            <foreach collection="ex.oredCriteria" item="criteria" separator="or">
+                <include refid="baseMapper.CRITERIA_SQL"></include>
+            </foreach>
+        </where>
+    </sql>
+
+    <sql id="PAGE_EXAMPLE_WHERE">
+        <where>
+            <foreach collection="page.getEx().oredCriteria" item="criteria" separator="or">
+                <include refid="baseMapper.CRITERIA_SQL"></include>
+            </foreach>
+        </where>
+    </sql>
+
+</mapper>

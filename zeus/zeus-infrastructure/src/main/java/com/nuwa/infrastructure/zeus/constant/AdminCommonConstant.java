@@ -1,0 +1,48 @@
+package com.nuwa.infrastructure.zeus.constant;
+
+public class AdminCommonConstant {
+    public final static int ROOT = -1;
+    public final static int DEFAULT_GROUP_TYPE = 0;
+
+    /**
+     * 权限关联类型
+     */
+    public final static String AUTHORITY_TYPE_GROUP = "group";
+
+    /**
+     * 权限关联类型GroupApp
+     */
+    public final static String AUTHORITY_TYPE_GROUP_APP = "group_app";
+
+    /**
+     * 权限资源类型
+     */
+    public final static String RESOURCE_TYPE_MENU = "menu";
+    public final static String RESOURCE_TYPE_BTN = "button";
+    public final static String RESOURCE_TYPE_SYS = "sys";
+
+    public final static String RESOURCE_REQUEST_METHOD_GET = "GET";
+    public final static String RESOURCE_REQUEST_METHOD_PUT = "PUT";
+    public final static String RESOURCE_REQUEST_METHOD_DELETE = "DELETE";
+    public final static String RESOURCE_REQUEST_METHOD_POST = "POST";
+
+    public final static String RESOURCE_ACTION_VISIT = "访问";
+
+    public final static String BOOLEAN_NUMBER_FALSE = "0";
+
+    public final static String BOOLEAN_NUMBER_TRUE = "1";
+
+    /**
+     * 平台超级管理员分组名称
+     */
+    public final static String ADMIN_ROLE = "adminRole";
+
+    /**
+     * 验证码有效期：2分钟
+     */
+    public final static Integer LOGIN_CAPTCHA_EXPIRATION = 2;
+
+    public final static String NORMAL_USER_TYPE = "0";
+    public final static String SUPPER_USER_TYPE = "1";
+
+}

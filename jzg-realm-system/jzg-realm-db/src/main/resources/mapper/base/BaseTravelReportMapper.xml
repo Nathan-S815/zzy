@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseTravelReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseTravelReport">
+        <id column="id" property="id" />
+        <result column="sub_travel_id" property="subTravelId" />
+        <result column="sub_travel_name" property="subTravelName" />
+        <result column="in_people" property="inPeople" />
+        <result column="out_people" property="outPeople" />
+        <result column="income" property="income" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="sub_scenic_id" property="subScenicId" />
+        <result column="report_time" property="reportTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_travel_id, sub_travel_name, in_people, out_people, income, report_matters, create_time, remark, id_delete,user_id,sub_scenic_id,report_time
+    </sql>
+    <select id="selectPageListBaseTravelReport" resultType="java.util.Map">
+    	select
+		a.id as id,
+		a.sub_travel_id as travelId,
+		a.sub_travel_name as travelName,
+		sum(a.people_num) as inPeople,
+		a.user_id as userId,
+		report_base_travel.contact_people as contactPeople,
+		report_base_travel.contact_phone as contactPhone,
+		report_base_travel.travel_phone as travelPhone,
+		a.report_time as reportTime
+		from (SELECT * FROM base_travel_line_report ORDER BY report_time DESC LIMIT 1000) a
+		left join report_base_travel on a.sub_travel_id = report_base_travel.id
+		where a.id_delete = 0
+		<if test="keyword!=null">
+            and a.sub_travel_name like concat('%',#{keyword},'%') or a.id like concat('%',#{keyword},'%')
+            and report_base_travel.contact_people like concat('%',#{keyword},'%') or report_base_travel.contact_phone like concat('%',#{keyword},'%')
+            and report_base_travel.travel_phone like concat('%',#{keyword},'%') or a.report_time like concat('%',#{keyword},'%')
+        </if>
+		GROUP BY a.sub_travel_id
+    </select>
+
+    <select id="getInPeopleAndIncome" resultType="java.util.Map">
+        SELECT
+	sum( in_people ) inPeople,
+	sum(out_people) outPeople,
+	sum( income ) income,
+	create_time createTime
+FROM
+	base_travel_report
+	where user_id =#{userId} and create_time like Concat(#{nowDate},'%') and id_delete = 0
+    </select>
+
+    <select id="getTravelTotalReception" resultType="int">
+        select sum( in_people ) from base_travel_report
+        <where>
+            <if test="year!=null ">
+                report_time like #{year}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="getScenicTravelReceptionCount" resultType="java.util.Map">
+        SELECT
+	a.scenic_name scenicName,
+	sum( b.in_people ) inPeople
+    FROM
+        report_base_scenic a
+	LEFT JOIN base_travel_report b ON a.id = b.sub_scenic_id
+        <where>
+            <if test="startTime!=null and endTime!=null">
+                b.report_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+	group by a.scenic_name
+    </select>
+
+    <select id="getTravelForecastWeek" resultType="int">
+      select sum( in_people ) from base_travel_report
+        <where>
+            <if test="startTime!=null and endTime!=null">
+                report_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getIncomeByTime" resultType="java.lang.Long">
+        select
+            sum(income)
+            from base_travel_report
+            where report_time between #{startTime} and #{endTime} and id_delete = 0
+    </select>
+
+    <update id="updateInPeople" parameterType="java.lang.Integer">
+        update base_travel_report
+        set in_people = #{inPeople}
+        where id = 1
+    </update>
+
+    <update id="updateIncome" parameterType="java.lang.Integer">
+        update base_travel_report
+        set income = #{income}
+        where id = 1
+    </update>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.user.mapper.MemberTaskPrizeRecordMapper">
+
+  <resultMap id="BaseResultMap" type="com.nuwa.infrastructure.discovery.database.user.vo.EquityManagerVO">
+    <result column="task_id" property="taskId" />
+    <result column="name" property="taskName" />
+    <result column="submit_time" property="submitTime" />
+    <result column="member_tag" property="memberTag" />
+    <result column="prize_title" property="prizeTitle" />
+    <result column="address" property="address" />
+    <result column="level" property="levelName" />
+    <result column="sex" property="sex" />
+    <result column="region" property="region" />
+
+
+  </resultMap>
+
+    <select id="selectEquityPage" resultMap="BaseResultMap">
+      SELECT   mtpr.task_id, mtpr.submit_time,mtpr.ext_data,
+               st.address,st.name,
+               mta.member_tag,mta.region,mta.sex, mtpr.prize_title,
+               mil.LEVEL
+      FROM   member_task_prize_record mtpr
+          LEFT JOIN(SELECT  member_tag,sex,task_id, region,user_level_id  FROM  member_task_apply) mta  ON mta.task_id = mtpr.task_id
+          LEFT JOIN(SELECT  id, NAME, address FROM   scenic_task) st  ON st.id = mtpr.task_id
+          LEFT JOIN(SELECT   id, LEVEL FROM member_integral_level) mil ON mil.id = mta.user_level_id
+        WHERE mtpr.prize_type_id = 11
+        <if test="prizeTitle != null and prizeTitle != ''">
+            AND mtpr.prize_title LIKE  concat(concat('%',#{prizeTitle}),'%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            <![CDATA[ AND mtpr.submit_time >= DATE_FORMAT(#{beginDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND mtpr.submit_time <= DATE_FORMAT(#{endDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        GROUP BY mtpr.user_id,mtpr.task_id ORDER BY mtpr.submit_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.attract.database.travel.mapper.TravelTeamMapper">
+
+    <select id="qryTravelAgencyNum" resultType="java.util.Map">
+        SELECT
+          B.mch_name,
+          SUM(team_person) AS pNum
+        FROM
+          travel_team A
+          LEFT JOIN
+            (SELECT
+              user_id,
+              mch_name,
+              account_type
+            FROM
+              attract_user) B
+            ON B.USER_ID = A.user_id AND B.account_type=3
+        GROUP BY A.user_id ORDER BY pNum DESC LIMIT 5
+    </select>
+
+    <select id="qrytravelTamAgencyNum" resultType="java.util.Map">
+        SELECT
+          B.mch_name,
+          COUNT(A.user_id) AS teamNum
+        FROM
+          travel_team A
+          LEFT JOIN
+            (SELECT
+              user_id,
+              mch_name,
+              account_type
+            FROM
+              attract_user) B
+            ON B.USER_ID = A.user_id
+            AND B.account_type = '3'
+        GROUP BY A.user_id
+        ORDER BY teamNum DESC LIMIT 5
+        </select>
+    <select id="qryAgencyNum" resultType="java.util.Map">
+             SELECT
+              B.mch_name,
+               SUM(A.attendance) AS teamNum
+            FROM
+             team_user_ref A
+              LEFT JOIN
+                (SELECT
+                  user_id,
+                  mch_name,
+                  account_type
+                FROM
+                  attract_user) B
+                ON B.USER_ID = A.user_id
+                where B.account_type =#{account_type}
+            GROUP BY A.user_id
+            ORDER BY teamNum DESC
+            LIMIT 5
+    </select>
+
+    <select id="qryTeamAgencyNum" resultType="java.util.Map">
+      SELECT DISTINCT
+              ac.mch_name,
+              COUNT(*) AS teamNum
+            FROM
+              (SELECT
+                au.mch_name,
+                au.user_id
+              FROM
+                team_user_ref tuf
+                LEFT JOIN
+                  (SELECT
+                    mch_name,
+                    user_id
+                  FROM
+                    attract_user) au
+                  ON tuf.user_id = au.user_id
+              WHERE TYPE = #{account_type}) ac
+            GROUP BY ac.mch_name
+            ORDER BY teamNum DESC
+            LIMIT 5
+    </select>
+
+    <select id="queryMonthVisitorNum" resultType="java.util.Map">
+        SELECT
+          a.months,
+          IFNULL(ROUND(b.sussm), 0)total  FROM
+          (SELECT
+            CASE
+              WHEN LENGTH(mon) = 1
+              THEN CONCAT(LEFT (CURRENT_DATE, 5) - 0, '-0', mon)
+              ELSE CONCAT(LEFT (CURRENT_DATE, 5) - 0, '-', mon)
+            END months
+          FROM
+            (SELECT
+              @m := @m + 1 mon
+            FROM
+              team_user_customer_ref,
+              (SELECT
+                @m := 0) a) aa
+          LIMIT 12) a
+          LEFT JOIN
+            (SELECT
+              COUNT(*) AS sussm,
+              DATE_FORMAT(travel_date, '%Y-%m') TIME
+            FROM
+              team_user_customer_ref
+            GROUP BY TIME) b
+            ON a.months = b.time
+        ORDER BY a.months
+    </select>
+
+    <select id="querylastMonthVisitorList" resultType="java.util.Map">
+        SELECT
+          a.months,
+          IFNULL(ROUND(b.sussm), 0)total  FROM
+          (SELECT
+            CASE
+              WHEN LENGTH(mon) = 1
+              THEN CONCAT(LEFT (CURRENT_DATE, 5) - 1, '-0', mon)
+              ELSE CONCAT(LEFT (CURRENT_DATE, 5) - 1, '-', mon)
+            END months
+          FROM
+            (SELECT
+              @m := @m + 1 mon
+            FROM
+              team_user_customer_ref,
+              (SELECT
+                @m := 0) a) aa
+          LIMIT 12) a
+          LEFT JOIN
+            (SELECT
+              COUNT(*) AS sussm,
+              DATE_FORMAT(travel_date, '%Y-%m') TIME
+            FROM
+              team_user_customer_ref
+            GROUP BY TIME) b
+            ON a.months = b.time
+        ORDER BY a.months
+    </select>
+
+
+    <select id="qrylocalVisitorList" resultType="java.util.Map">
+        SELECT
+          COUNT(cn.cd) AS Num,
+          (SELECT
+            CRI_NAME
+          FROM
+            cn_region_info
+          WHERE CRI_CODE = ct.CRI_SUPERIOR_CODE) AS SUPERIOR_name
+        FROM
+          cn_region_info ct
+          LEFT JOIN
+            (SELECT
+              LEFT(idcard, 6) AS cd
+            FROM
+              customer) cn
+            ON cn.cd = ct.CRI_CODE
+        WHERE cn.cd   LIKE  concat(concat(#{place_code}),'%')
+        GROUP BY SUPERIOR_name
+        ORDER BY Num DESC
+        limit 7
+    </select>
+
+    <select id="qryotherPlaceVisitorList" resultType="java.util.Map">
+        SELECT
+          COUNT(cn.cd) AS Num,
+          (SELECT
+            CRI_NAME
+          FROM
+            cn_region_info
+          WHERE CRI_CODE = ct.CRI_SUPERIOR_CODE) AS SUPERIOR_name
+        FROM
+          cn_region_info ct
+          LEFT JOIN
+            (SELECT
+              LEFT(idcard, 6) AS cd
+            FROM
+              customer) cn
+            ON cn.cd = ct.CRI_CODE
+        WHERE cn.cd  NOT LIKE  concat(concat(#{place_code}),'%')
+        GROUP BY SUPERIOR_name
+        ORDER BY Num DESC
+        limit 7
+    </select>
+
+    <select id="qryTravelTeamPage" resultType="com.nuwa.infrastructure.vo.TravelTeamVO">
+        SELECT  tt.team_id,  tt.team_name, tt.leader_name, tt.team_person, tt.begin_date,  tt.end_date, tt.apply_time, tt.team_status,tt.ref_mch
+        FROM    travel_team tt WHERE 1=1 AND tt.user_id = #{userId}
+        <if test="teamId != null and teamId != ''">
+            AND tt.team_id = #{teamId}
+        </if>
+        <if test="teamStatus != null and teamStatus != ''">
+            AND tt.team_status = #{teamStatus}
+        </if>
+        <if test="leadName != null and leadName != ''">
+            AND tt.leader_name LIKE  concat(concat('%',#{leadName),'%')
+        </if>
+        <if test="refMch != null and refMch != ''">
+            AND tt.ref_mch LIKE  concat(concat('%',#{refMch}),'%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            <![CDATA[ AND mtpr.submit_time >= DATE_FORMAT(#{beginDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND mtpr.submit_time <= DATE_FORMAT(#{endDate},'%Y-%m-%d %H:%i:%S')]]>
+        </if>
+        ORDER BY tt.apply_time DESC
+    </select>
+</mapper>

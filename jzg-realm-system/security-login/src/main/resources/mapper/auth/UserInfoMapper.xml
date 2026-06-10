@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.security.lib.dao.UserInfoMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.security.lib.entity.UserInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="head_icon" jdbcType="VARCHAR" property="headIcon" />
+    <result column="pass_word" jdbcType="VARCHAR" property="passWord" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="is_enable" jdbcType="INTEGER" property="isEnable" />
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, head_icon, pass_word, qq, email,create_time, is_delete, is_enable
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.security.lib.entity.UserInfo" useGeneratedKeys="true" keyProperty="id">
+    insert into user_info (id, user_name,head_icon, pass_word,
+      create_time, is_delete, is_enable
+      )
+    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},#{headIcon,jdbcType=VARCHAR}, #{passWord,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER}, #{isEnable,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.security.lib.entity.UserInfo">
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="headIcon != null">
+        head_icon,
+      </if>
+      <if test="passWord != null">
+        pass_word,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="headIcon != null">
+        #{headIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="passWord != null">
+        #{passWord,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.security.lib.entity.UserInfo">
+    update user_info
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="headIcon != null">
+        head_icon = #{headIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="passWord != null">
+        pass_word = #{passWord,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.security.lib.entity.UserInfo">
+    update user_info
+    set user_name = #{userName,jdbcType=VARCHAR},
+        head_icon = #{headIcon,jdbcType=VARCHAR},
+      pass_word = #{passWord,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      is_enable = #{isEnable,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+<!--  // useGeneratedKeys="true" keyProperty="id" parameterType="com.zzy.security.lib.entity.UserInfo"-->
+  <insert id="insertStudentCacheId" parameterType="com.zzy.security.lib.entity.UserInfo">
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+        insert into user_info(user_name,pass_word,create_time,is_delete,is_enable) values(#{userName},#{passWord},#{createTime},#{isDelete},#{isEnable})
+    </insert>
+
+  <!--  ***************************************custom method*************************************************  -->
+
+
+
+  <select id="selectByUsrename" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_info
+    where user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+
+  <insert id="insertUser" parameterType="com.zzy.security.lib.entity.UserInfo" useGeneratedKeys="true" keyProperty="id">
+   insert into user_info (id, user_name, head_icon,pass_word,
+      create_time, is_delete, is_enable
+      )
+    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{headIcon,jdbcType=VARCHAR},#{passWord,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER}, #{isEnable,jdbcType=INTEGER}
+      )
+</insert>
+
+
+
+    <select id="selectAllSystemUrls" parameterType="java.lang.String" resultType="java.util.Map">
+    SELECT
+    DISTINCT ppi.permission_name as systemName, ppi.permission_url as systemUrl
+    FROM permission_info ppi
+    LEFT JOIN role_permission prp ON ppi.id = prp.permission_id
+    LEFT JOIN user_role pur ON prp.role_id = pur.role_id
+    LEFT JOIN user_info pui ON pur.user_id = pui.id
+    WHERE pui.user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+    <select id="selectUserPages" resultType="java.util.Map">
+      select
+      ui.id, ui.user_name as userName, ui.create_time as createTime, ui.is_enable as isEnable
+      from user_info ui
+      left join user_role ur on ui.id = ur.user_id
+      where ui.is_delete = 0
+      <if test="userName != null">
+        and ui.user_name like CONCAT('%',#{userName},'%')
+      </if>
+      <if test="roleId != null">
+        and ur.role_id = #{roleId}
+      </if>
+    </select>
+
+  <select id="selectByUsrenames" resultType="com.zzy.security.lib.entity.UserInfo">
+    select
+    <include refid="Base_Column_List" />
+    from user_info where user_name in
+    <foreach collection="names" item="item" index="index" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+
+  <update id="updateUserByNameSelective" parameterType="com.zzy.security.lib.entity.UserInfo">
+    update user_info
+    <set>
+      <if test="passWord != null">
+        pass_word = #{passWord,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=INTEGER},
+      </if>
+    </set>
+    where user_name = #{userName,jdbcType=VARCHAR}
+  </update>
+
+
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into user_info (id, user_name, pass_word,
+    create_time, is_delete, is_enable
+    )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.id,jdbcType=INTEGER},
+      #{item.userName,jdbcType=VARCHAR},
+      #{item.passWord,jdbcType=VARCHAR},
+      #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.isDelete,jdbcType=INTEGER},
+      #{item.isEnable,jdbcType=INTEGER}
+      )
+    </foreach>
+  </insert>
+
+
+
+
+
+
+</mapper>

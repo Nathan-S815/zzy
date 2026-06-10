@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.member.mapper.MemberAccountBindRecordMapper">
+
+
+    <select id="getMemberAccountBindRecordVOByBindId" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemberAccountBindRecordVO">
+        SELECT
+            id,member_account_bind_id as memberAccountBindId,
+            user_id as userId,account_id as accountId,
+            channel_code as channelCode,nick,
+            fans_count as fansCount,sex,
+            birthday,region,
+            level,invite_code as inviteCode,
+            status,create_time createTime,
+            content,pictures,
+            third_party_tag as thirdPartyTag,refuse_reason as refuseReason,
+            refuse_pictures as refusePictures,update_time as updateTime
+        FROM member_account_bind_record
+        WHERE
+            member_account_bind_id = #{memberAccountBindId} AND status = #{status}
+        ORDER BY
+            create_time desc
+        LIMIT 1
+    </select>
+
+
+    <select id="getMemberAccountBindRecordVO" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemberAccountBindRecordVO">
+        SELECT
+            id,member_account_bind_id as memberAccountBindId,
+            user_id as userId,account_id as accountId,
+            channel_code as channelCode,nick,
+            fans_count as fansCount,sex,
+            birthday,region,
+            level,invite_code as inviteCode,
+            status,create_time createTime,
+            content,pictures,
+            third_party_tag as thirdPartyTag,refuse_reason as refuseReason,
+            refuse_pictures as refusePictures
+        FROM member_account_bind_record
+        WHERE
+            id = #{id}
+    </select>
+
+
+    <select id="getMemberAccountBindRecordVOByParams" resultType="com.nuwa.infrastructure.discovery.database.member.vo.MemberAccountBindRecordVO">
+        SELECT
+            id,member_account_bind_id as memberAccountBindId,
+            user_id as userId,account_id as accountId,
+            channel_code as channelCode,nick,
+            fans_count as fansCount,sex,
+            birthday,region,
+            level,invite_code as inviteCode,
+            status,create_time createTime,
+            content,pictures,
+            third_party_tag as thirdPartyTag,refuse_reason as refuseReason,
+            refuse_pictures as refusePictures,update_time as updateTime
+        FROM member_account_bind_record
+        <where>
+            <if test="params.userId != null">
+                AND user_id = #{params.userId}
+            </if>
+            <if test="params.status != null">
+                AND status = #{params.status}
+            </if>
+            <if test="params.memberAccountBindId != null">
+                AND member_account_bind_id = #{memberAccountBindId}
+            </if>
+        </where>
+        ORDER BY
+            create_time desc
+            LIMIT 1
+    </select>
+</mapper>

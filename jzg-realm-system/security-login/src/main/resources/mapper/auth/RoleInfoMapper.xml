@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.security.lib.dao.RoleInfoMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.security.lib.entity.RoleInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_code" jdbcType="VARCHAR" property="roleCode" />
+    <result column="is_enable" jdbcType="INTEGER" property="isEnable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, role_name, role_code, is_enable, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from role_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from role_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.security.lib.entity.RoleInfo">
+    insert into role_info (id, role_name, is_enable,
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{isEnable,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.security.lib.entity.RoleInfo">
+    insert into role_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roleName != null">
+        role_name,
+      </if>
+      <if test="isEnable != null">
+        is_enable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="isEnable != null">
+        #{isEnable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.zzy.security.lib.entity.RoleInfo">
+    update role_info
+    <set>
+      <if test="roleName != null">
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="isEnable != null">
+        is_enable = #{isEnable,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.security.lib.entity.RoleInfo">
+    update role_info
+    set role_name = #{roleName,jdbcType=VARCHAR},
+      is_enable = #{isEnable,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectRoleList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from role_info
+  </select>
+    <select id="selectByRoleName" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from role_info
+      where role_name = #{roleName,jdbcType=VARCHAR}
+    </select>
+
+
+  <select id="selectRoleByUserId2" parameterType="java.lang.Integer"  resultMap="BaseResultMap">
+        select
+		r.*
+		from role_info r
+		LEFT JOIN user_role ur ON r.id = ur.role_id
+		where ur.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+  <select id="selectByRoleNames" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from role_info
+    where role_name in
+    <foreach collection="roleNames" item="role" index="index" open="(" close=")" separator=",">
+      #{role}
+    </foreach>
+  </select>
+    <select id="selectRolesByUserName" resultMap="BaseResultMap">
+      select
+      ri.*
+      from role_info ri
+      left join user_role ur on ri.id = ur.role_id
+      left join user_info ui on ur.user_id = ui.id
+      where ui.user_name = #{userName}
+    </select>
+
+
+    <insert id="insertRoleInfo" keyProperty="id" useGeneratedKeys="true">
+    insert into role_info (id, role_name, is_enable,
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{isEnable,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+</mapper>

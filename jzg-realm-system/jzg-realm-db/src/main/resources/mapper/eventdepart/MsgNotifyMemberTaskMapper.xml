@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.MsgNotifyMemberTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.MsgNotifyMemberTask">
+        <id column="id" property="id" />
+        <result column="event_id" property="eventId" />
+        <result column="departmember_id" property="departmemberId" />
+        <result column="notify_time" property="notifyTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, event_id, departmember_id, notify_time, create_time
+    </sql>
+
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into msg_notify_member_task (id, event_id, departmember_id, notify_time, create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id,jdbcType=INTEGER},
+            #{item.eventId,jdbcType=INTEGER},
+            #{item.departmemberId,jdbcType=INTEGER},
+            #{item.notifyTime,jdbcType=TIMESTAMP},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+        on duplicate key update
+        create_time = sysdate()
+    </insert>
+
+
+
+
+
+
+
+    <select id="selectEventListByMsgTaskMember" resultType="java.util.Map">
+        SELECT
+        ei.id eventId, ei.event_name eventName,  ei.event_level eventLevel, ei.event_content eventContent,
+        ei.lng,ei.lat,ei.address,ei.happen_time happenTime, emi.pic1_path pic1Path, emi.pic2_path pic2Path,
+        emi.pic3_path pic3Path, emi.video_path videoPath, emi.file_path filePath
+        FROM event_info ei
+        LEFT JOIN  msg_notify_member_task mmt ON mmt.event_id = ei.id
+        LEFT JOIN department_member dm ON mmt.departmember_id = dm.id
+        LEFT JOIN event_media_info emi ON ei.id = emi.event_id
+        WHERE dm.user_id = #{userId}
+        <if test="eventStatus!=null ">
+            and ei.event_status = #{eventStatus}
+        </if>
+    </select>
+    <select id="selectMemberByEventWithDepartId" resultType="java.util.Map">
+        select mmt.departmember_id as memberId,dm.`name` as memberName,dm.department_id departId,di.`name` as departName
+        from msg_notify_member_task mmt
+        left join department_member dm on mmt.departmember_id = dm.id
+        left join department_info di on dm.department_id = di.id
+        where mmt.event_id = #{eventId}
+        and dm.department_id in
+        <foreach collection="departId" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+</mapper>

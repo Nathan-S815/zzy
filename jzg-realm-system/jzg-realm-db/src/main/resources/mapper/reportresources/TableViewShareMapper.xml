@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportresources.TableViewShareMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.reportresources.TableViewShare">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="table_type" jdbcType="VARCHAR" property="tableType" />
+    <result column="tab_type" jdbcType="VARCHAR" property="tabType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, table_name, table_type, tab_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from table_view_share
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from table_view_share
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.db.entity.eventdepart.reportresources.TableViewShare">
+    insert into table_view_share (id, table_name, table_type, 
+      tab_type)
+    values (#{id,jdbcType=INTEGER}, #{tableName,jdbcType=VARCHAR}, #{tableType,jdbcType=VARCHAR}, 
+      #{tabType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.TableViewShare">
+    insert into table_view_share
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="tableName != null">
+        table_name,
+      </if>
+      <if test="tableType != null">
+        table_type,
+      </if>
+      <if test="tabType != null">
+        tab_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableName != null">
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableType != null">
+        #{tableType,jdbcType=VARCHAR},
+      </if>
+      <if test="tabType != null">
+        #{tabType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.TableViewShare">
+    update table_view_share
+    <set>
+      <if test="tableName != null">
+        table_name = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="tableType != null">
+        table_type = #{tableType,jdbcType=VARCHAR},
+      </if>
+      <if test="tabType != null">
+        tab_type = #{tabType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.db.entity.eventdepart.reportresources.TableViewShare">
+    update table_view_share
+    set table_name = #{tableName,jdbcType=VARCHAR},
+      table_type = #{tableType,jdbcType=VARCHAR},
+      tab_type = #{tabType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+  <select id="selectTabWithNum" resultType="java.util.Map">
+    SELECT res.tabType,COUNT(res.subNum) as subNum,GROUP_CONCAT(res.subType) as subType
+    FROM
+    (
+    SELECT
+    tv.tab_type as tabType, COUNT(DISTINCT tv.table_type) as subNum,
+    CONCAT_WS('_',tv.table_type,COUNT(tv.table_type)) as subType
+    FROM tab_type_info ty
+    LEFT JOIN table_view_share tv ON ty.tab_name = tv.tab_type
+    GROUP BY tv.table_type
+    )res
+    GROUP BY res.tabType
+    ORDER BY subNum desc
+  </select>
+
+
+
+  <select id="selectAllRowColumn" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+    ist.table_name as tableCode,ist.TABLE_COMMENT as tableName,COUNT(1) as fieldNum, ist.TABLE_ROWS as records, (CASE tv.update_type WHEN 1 THEN '每日更新'
+    WHEN 2 THEN '每周更新'
+    WHEN 3 THEN '每月更新'
+    WHEN 4 THEN '每年更新' ELSE '无' END)as updateType
+      FROM table_view_share tv
+      LEFT JOIN information_schema.TABLES ist ON tv.table_name = ist.table_name
+      LEFT JOIN information_schema.COLUMNS isc ON ist.table_name = isc.table_name AND ist.TABLE_SCHEMA = isc.TABLE_SCHEMA
+      WHERE ist.TABLE_SCHEMA in ('putuo_base_data','crawler_base')
+      <if test=" tableName != null ">
+        and ist.TABLE_COMMENT like CONCAT('%',#{tableName},'%')
+      </if>
+    <if test="tableType != null">
+      and tv.table_type = #{tableType,jdbcType=VARCHAR}
+    </if>
+      GROUP BY tv.table_name
+  </select>
+
+
+  <select id="selectTableDetails" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    COLUMN_NAME as fieldEngName,
+    COLUMN_COMMENT as fieldCnsName,
+    COLUMN_TYPE as fieldType,
+    IS_NULLABLE as isNullAble
+    FROM
+    INFORMATION_SCHEMA.COLUMNS
+    WHERE
+    table_schema  in ('putuo_base_data','crawler_base')
+    AND TABLE_NAME = #{tableCode}
+  </select>
+
+
+  <select id="selectTableRecords" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    *
+    FROM
+    ${schemaName}.${tableCode}
+  </select>
+
+
+
+  <select id="selectFeildNumWithTableNum" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    COUNT(res.table_name) as totalTableNum,SUM(fieldNum) as totalFieldNum,SUM(rowNum) as totalRowNum
+    FROM
+    (
+    SELECT
+    ist.table_name,COUNT(1) as fieldNum,ist.TABLE_ROWS as rowNum
+    FROM table_view_share tv
+    LEFT JOIN information_schema.TABLES ist ON tv.table_name = ist.table_name
+    LEFT JOIN information_schema.COLUMNS isc ON ist.table_name = isc.table_name AND ist.TABLE_SCHEMA = isc.TABLE_SCHEMA
+    WHERE ist.TABLE_SCHEMA in ('putuo_base_data','crawler_base')
+    <if test=" tableName != null ">
+      and ist.TABLE_COMMENT like CONCAT('%',#{tableName},'%')
+    </if>
+    <if test="tableType != null">
+      and tv.table_type = #{tableType,jdbcType=VARCHAR}
+    </if>
+    <if test="tabType != null">
+      and tv.tab_type = #{tabType,jdbcType=VARCHAR}
+    </if>
+    GROUP BY tv.table_name
+    )res
+  </select>
+
+
+
+    <select id="selectFieldCnsName" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+CONCAT('{',GROUP_CONCAT(CONCAT_WS(':',CONCAT('"',COLUMN_NAME,'"'),CONCAT('"',COLUMN_COMMENT,'"'))),'}') as fieldCnsName
+    FROM
+    INFORMATION_SCHEMA.COLUMNS
+    WHERE
+    table_schema  in ('putuo_base_data','crawler_base')
+    AND TABLE_NAME = #{tableCode}
+  </select>
+
+  <select id="selectTableTypeCount" resultType="java.lang.Integer">
+    select count(1) from table_type_info
+  </select>
+
+</mapper>

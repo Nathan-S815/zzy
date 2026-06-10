@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.EventFeedbackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.EventFeedback">
+        <id column="id" property="id" />
+        <result column="event_id" property="eventId" />
+        <result column="departmember_id" property="departmemberId" />
+        <result column="video_content_path" property="videoContentPath" />
+        <result column="check_status" property="checkStatus" />
+        <result column="create_user" property="createUser" />
+        <result column="process_msg" property="processMsg" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="check_time" property="checkTime" />
+        <result column="report_status" property="reportStatus" />
+    </resultMap>
+    <select id="selectFeedbackDetailByIds" resultType="java.util.Map">
+        select
+        ef.id feedbackId,ef.video_content_path videoContentPath,
+        ef.check_status checkStatus,ef.process_msg processMsg,
+        eff.pic1_path pic1Path,eff.pic2_path pic2Path,eff.pic3_path pic3Path,eff.file_path filePath
+        from event_feedback ef
+        left join event_feedback_file eff on ef.id = eff.feed_back_id
+        where ef.event_id = #{eventId} and ef.departmember_id = #{memberId}
+    </select>
+
+    <select id="selectCheckedFeedbackDetailByEventId" resultType="java.util.Map">
+        select
+        ef.id feedbackId,ef.video_content_path videoContentPath,ef.departmember_id as memberId,dm.`name` as memberName,
+        ef.check_status checkStatus,ef.process_msg processMsg,
+        eff.pic1_path pic1Path,eff.pic2_path pic2Path,eff.pic3_path pic3Path,eff.file_path filePath
+        from event_feedback ef
+        left join event_feedback_file eff on ef.id = eff.feed_back_id
+        left join department_member dm on ef.departmember_id = dm.id
+        where ef.event_id = #{eventId} and ef.check_status in(2,4) and ef.report_status = 2
+    </select>
+
+</mapper>

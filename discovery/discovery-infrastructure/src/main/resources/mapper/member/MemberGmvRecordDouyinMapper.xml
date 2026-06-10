@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.member.mapper.MemberGmvRecordDouyinMapper">
+
+    <insert id="insertMemberGmvRecordDouyinBatch" parameterType="com.nuwa.infrastructure.discovery.database.member.entity.MemberGmvRecordDouyin">
+        INSERT INTO member_gmv_record_douyin (
+            base_id,third_party_account,
+            user_id,third_party_nike,
+            third_party_order_id,third_party_commodity_id,
+            price,payment_time
+        )VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.baseId},#{item.thirdPartyAccount},
+            #{item.userId},#{item.thirdPartyNike},
+            #{item.thirdPartyOrderId},#{item.thirdPartyCommodityId},
+            #{item.price},#{item.paymentTime})
+        </foreach>
+    </insert>
+
+    <update id="incrMemberGMV">
+        UPDATE member SET gmv = gmv + #{gmv} WHERE user_id = #{userId}
+    </update>
+
+    <update id="decrMemberGMV">
+        UPDATE member SET gmv = gmv - #{gmv} WHERE user_id = #{userId}
+    </update>
+</mapper>

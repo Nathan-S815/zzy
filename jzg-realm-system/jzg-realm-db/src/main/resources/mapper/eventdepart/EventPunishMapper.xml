@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.EventPunishMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.EventPunish">
+        <id column="id" property="id" />
+        <result column="event_id" property="eventId" />
+        <result column="exeute_depart_id" property="exeuteDepartId" />
+        <result column="punish_remark" property="punishRemark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, event_id, exeute_depart_id, punish_remark
+    </sql>
+
+    <select id="selectPunishDepartInfoByEventId" resultType="java.util.Map">
+        select
+        ep.exeute_depart_id as departId,di.`name` as departName, ep.punish_remark as punishRemark
+        from event_punish ep
+        left join department_info di on ep.exeute_depart_id = di.id
+        where ep.event_id = #{eventId}
+    </select>
+
+</mapper>

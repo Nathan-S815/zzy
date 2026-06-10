@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.publicsentiment.ScenicSpotMapper">
+
+    <select id="getScenicSpotList" resultType="com.zzy.db.entity.publicsentiment.ScenicSpot">
+        SELECT
+            id, service_number as serviceNumber,
+            score, name,
+            rank_num as rankNum, flag
+        FROM
+            scenic_spot
+        WHERE
+            service_number = #{serviceNumber}
+        ORDER BY rank_num ASC
+    </select>
+
+
+    <select id="getScenicNewsList" resultType="com.zzy.db.entity.publicsentiment.ScenicNews">
+        SELECT
+            id,
+            score, name,
+            rank_num as rankNum, flag
+        FROM
+            scenic_news
+        ORDER BY rank_num ASC
+    </select>
+</mapper>

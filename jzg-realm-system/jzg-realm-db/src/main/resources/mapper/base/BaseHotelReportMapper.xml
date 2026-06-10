@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.BaseHotelReportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.BaseHotelReport">
+        <id column="id" property="id" />
+        <result column="sub_hotel_id" property="subHotelId" />
+        <result column="sub_scenic_id" property="subScenicId" />
+        <result column="sub_hotel_name" property="subHotelName" />
+        <result column="in_people" property="inPeople" />
+        <result column="out_people" property="outPeople" />
+        <result column="income" property="income" />
+        <result column="room_num" property="roomNum" />
+        <result column="bed_num" property="bedNum" />
+        <result column="report_matters" property="reportMatters" />
+        <result column="create_time" property="createTime" />
+        <result column="remark" property="remark" />
+        <result column="id_delete" property="idDelete" />
+        <result column="user_id" property="userId" />
+        <result column="surplus_room_num" property="surplusRoomNum" />
+        <result column="surplus_bed_num" property="surplusBedNum" />
+        <result column="report_time" property="reportTime" />
+        <result column="stay_one_in" property="stayOneIn" />
+        <result column="stay_two_in" property="stayTwoIn" />
+        <result column="stay_three_in" property="stayThreeIn" />
+        <result column="stay_four_in" property="stayFourIn" />
+        <result column="stay_five_in" property="stayFiveIn" />
+        <result column="stay_six_in" property="staySixIn" />
+        <result column="stay_one_out" property="stayOneOut" />
+        <result column="stay_two_out" property="stayTwoOut" />
+        <result column="stay_three_out" property="stayThreeOut" />
+        <result column="stay_four_out" property="stayFourOut" />
+        <result column="stay_five_out" property="stayFiveOut" />
+        <result column="stay_six_out" property="staySixOut" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sub_hotel_id, sub_scenic_id, sub_hotel_name, in_people, out_people, income, room_num, bed_num, report_matters, create_time, remark, id_delete, user_id, surplus_room_num, surplus_bed_num, report_time, stay_one_in, stay_two_in, stay_three_in, stay_four_in, stay_five_in, stay_six_in, stay_one_out, stay_two_out, stay_three_out, stay_four_out, stay_five_out, stay_six_out
+    </sql>
+
+    <select id="selectPageListBaseHotelReport" resultType="java.util.Map">
+        SELECT a.id as id ,
+                a.sub_hotel_id as hotelId ,
+                a.sub_hotel_name as hotelName ,
+                a.in_people as inPeople ,
+                a.income as income ,
+                report_base_hotel.contact_people as contactPeople ,
+                report_base_hotel.contact_phone as contactPhone ,
+                report_base_hotel.hotel_phone as scenicPhone ,
+                a.report_time as reportTime,
+                a.user_id as userId,
+                surplus_room_num as roomNum
+            FROM(SELECT * FROM base_hotel_report ORDER BY report_time DESC LIMIT 1000) a left join report_base_hotel on a.sub_hotel_id = report_base_hotel.id
+            where id_delete = 0
+            <if test="keyword!=null">
+                and (a.sub_hotel_name like concat('%',#{keyword},'%') or a.id like concat('%',#{keyword},'%')
+                or a.in_people like concat('%',#{keyword},'%') or a.income like concat('%',#{keyword},'%')
+                or report_base_hotel.contact_people like concat('%',#{keyword},'%') or report_base_hotel.contact_phone like concat('%',#{keyword},'%')
+                or report_base_hotel.hotel_phone like concat('%',#{keyword},'%') or a.report_time like concat('%',#{keyword},'%')
+                or surplus_room_num like concat('%',#{keyword},'%')
+                )
+            </if>
+            GROUP BY a.sub_hotel_id
+    </select>
+
+    <select id="getBaseHotelReportByHotelId" resultType="java.util.Map">
+        select id,
+            report_time as reportTime,
+            in_people as inPeople,
+            income,
+            surplus_room_num as surplusRoomNum,
+            room_num as roomNum
+        from base_hotel_report
+        where user_id = #{id}
+        and report_time between #{startTime} and #{endTime} and id_delete = 0
+        order by report_time desc
+        limit #{beginNumber},#{pagSize}
+    </select>
+
+    <select id="getInPeopleAndIncome" resultType="java.util.Map">
+          SELECT
+	sum( in_people ) inPeople,
+	sum(out_people) outPeople,
+	sum( income ) income,
+	create_time createTime
+FROM
+	base_hotel_report
+	where user_id =#{userId} and create_time like Concat(#{nowDate},'%') and id_delete = 0
+    </select>
+
+    <select id="getReportByTime" resultMap="BaseResultMap">
+        select *
+        from base_hotel_report
+        where report_time between #{startTime} and #{endTime} and id_delete = 0
+        order by report_time desc
+    </select>
+
+    <select id="getReportByTimeWithScenic" resultMap="BaseResultMap">
+        select sub_hotel_id,sub_hotel_name,in_people,room_num,surplus_room_num,report_base_scenic.scenic_name as sub_scenic_id,report_time, stay_one_in, stay_two_in, stay_three_in, stay_four_in, stay_five_in, stay_six_in, stay_one_out, stay_two_out, stay_three_out, stay_four_out, stay_five_out, stay_six_out
+        from base_hotel_report left join report_base_scenic on base_hotel_report.sub_scenic_id = report_base_scenic.id
+        where report_time between #{startTime} and #{endTime} and id_delete = 0
+        order by report_time desc
+    </select>
+
+    <select id="getIncomeByTime" resultType="java.lang.Long">
+        select
+            sum(income)
+            from base_hotel_report
+            where report_time between #{startTime} and #{endTime} and id_delete = 0
+    </select>
+
+    <update id="updateSurplusRoom">
+        update base_hotel_report
+        set surplus_room_num = #{num},in_people = #{inPeople},report_time = #{time}
+        where id = #{id}
+    </update>
+    <update id="updateIncome" parameterType="java.lang.Integer">
+        update base_hotel_report
+        set income = #{income}
+        where id = 1
+    </update>
+
+    <select id="getTouristStayByScenic" resultType="java.util.Map">
+        select sum(stay_one_in) as 省内1天,
+               sum(stay_two_in) as 省内2天,
+               sum(stay_three_in) as 省内3天,
+               sum(stay_four_in) as 省内4天,
+               sum(stay_five_in) as 省内5天,
+               sum(stay_six_in) as 省内6天,
+               sum(stay_one_out) as 省外1天,
+               sum(stay_two_out) as 省外2天,
+               sum(stay_three_out) as 省外3天,
+               sum(stay_four_out) as 省外4天,
+               sum(stay_five_out) as 省外5天,
+               sum(stay_six_out) as 省外6天,
+               scenic_name
+        from base_hotel_report
+        join report_base_scenic where report_base_scenic.id = base_hotel_report.sub_scenic_id
+        and report_time between #{startTime} and #{endTime} GROUP BY sub_scenic_id
+    </select>
+
+    <select id="getTouristQualityByScenic" resultType="java.util.Map">
+        select scenic_name scenicName,sum(income) income
+        from base_hotel_report hotel join report_base_scenic scenic
+        where sub_scenic_id = scenic.id and hotel.id_delete = 0 and scenic.is_delete = 0
+        and report_time between #{startTime} and #{endTime}
+        GROUP BY scenic_name
+    </select>
+
+</mapper>

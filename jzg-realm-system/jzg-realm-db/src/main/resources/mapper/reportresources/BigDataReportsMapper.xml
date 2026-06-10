@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.reportresources.BigDataReportsMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.reportresources.BigDataReports">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="report_name" jdbcType="VARCHAR" property="reportName" />
+    <result column="report_subject" jdbcType="INTEGER" property="reportSubject" />
+    <result column="report_cycle" jdbcType="VARCHAR" property="reportCycle" />
+    <result column="report_state" jdbcType="INTEGER" property="reportState" />
+    <result column="place_num" jdbcType="VARCHAR" property="placeNum" />
+    <result column="scenic_passenger" jdbcType="VARCHAR" property="scenicPassenger" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, report_name, report_subject, report_cycle, report_state, place_num, scenic_passenger, 
+    create_user, create_time, update_time, is_delete
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from big_data_reports
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from big_data_reports
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReports">
+    insert into big_data_reports (id, report_name, report_subject,
+      report_cycle, report_state, place_num, 
+      scenic_passenger, create_user, create_time, 
+      update_time, is_delete)
+    values (#{id,jdbcType=INTEGER}, #{reportName,jdbcType=VARCHAR}, #{reportSubject,jdbcType=INTEGER}, 
+      #{reportCycle,jdbcType=VARCHAR}, #{reportState,jdbcType=INTEGER}, #{placeNum,jdbcType=VARCHAR}, 
+      #{scenicPassenger,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReports">
+    insert into big_data_reports
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="reportName != null">
+        report_name,
+      </if>
+      <if test="reportSubject != null">
+        report_subject,
+      </if>
+      <if test="reportCycle != null">
+        report_cycle,
+      </if>
+      <if test="reportState != null">
+        report_state,
+      </if>
+      <if test="placeNum != null">
+        place_num,
+      </if>
+      <if test="scenicPassenger != null">
+        scenic_passenger,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="reportName != null">
+        #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportSubject != null">
+        #{reportSubject,jdbcType=INTEGER},
+      </if>
+      <if test="reportCycle != null">
+        #{reportCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="reportState != null">
+        #{reportState,jdbcType=INTEGER},
+      </if>
+      <if test="placeNum != null">
+        #{placeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="scenicPassenger != null">
+        #{scenicPassenger,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReports">
+    update big_data_reports
+    <set>
+      <if test="reportName != null">
+        report_name = #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportSubject != null">
+        report_subject = #{reportSubject,jdbcType=INTEGER},
+      </if>
+      <if test="reportCycle != null">
+        report_cycle = #{reportCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="reportState != null">
+        report_state = #{reportState,jdbcType=INTEGER},
+      </if>
+      <if test="placeNum != null">
+        place_num = #{placeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="scenicPassenger != null">
+        scenic_passenger = #{scenicPassenger,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReports">
+    update big_data_reports
+    set report_name = #{reportName,jdbcType=VARCHAR},
+      report_subject = #{reportSubject,jdbcType=INTEGER},
+      report_cycle = #{reportCycle,jdbcType=VARCHAR},
+      report_state = #{reportState,jdbcType=INTEGER},
+      place_num = #{placeNum,jdbcType=VARCHAR},
+      scenic_passenger = #{scenicPassenger,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <insert id="insertBean" parameterType="com.zzy.db.entity.eventdepart.reportresources.BigDataReports" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+  insert into big_data_reports (report_name, report_subject,
+      report_cycle, report_state, place_num,
+      scenic_passenger, create_user, create_time,
+      update_time, is_delete)
+    values (#{reportName,jdbcType=VARCHAR}, #{reportSubject,jdbcType=INTEGER},
+      #{reportCycle,jdbcType=VARCHAR}, #{reportState,jdbcType=INTEGER}, #{placeNum,jdbcType=VARCHAR},
+      #{scenicPassenger,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=INTEGER})
+</insert>
+
+
+  <select id="selectByUniqKey" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from big_data_reports
+    where  report_name = #{reportName,jdbcType=VARCHAR}
+     and report_subject = #{reportSubject,jdbcType=INTEGER}
+     and report_cycle = #{reportCycle,jdbcType=VARCHAR}
+     and create_user = #{createUser,jdbcType=VARCHAR}
+  </select>
+
+
+
+  <select id="selectListByMap" parameterType="java.util.Map" resultType="java.util.Map">
+    select
+    id, report_name as reportName, report_subject as reportSubject, report_cycle as reportCycle, report_state as isPublish,
+    create_user as createUser, create_time as createTime
+    from big_data_reports
+    <where>
+      is_delete = 0
+      <if test="reportName != null">
+        and LOCATE(#{reportName,jdbcType=VARCHAR}, `report_name`)>0
+      </if>
+      <if test="reportSubject != null">
+        and  report_subject = #{reportSubject,jdbcType=INTEGER}
+      </if>
+      <if test="reportCycle != null">
+        and   report_cycle = #{reportCycle,jdbcType=VARCHAR}
+      </if>
+      <if test="reportState != null">
+        and  report_state = #{reportState,jdbcType=INTEGER}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+
+
+  <select id="selectReportById" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select
+    bdr.place_num as placeNum,bdr.scenic_passenger as scenicPassenger,bdrc.report_content_part as reportContent
+    from big_data_reports bdr
+    LEFT JOIN big_data_reports_content bdrc ON bdr.id = bdrc.pt_big_data_reports_id
+    where id = #{reportId}
+  </select>
+
+
+  <select id="selectProInnerCity" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.city as cityName,SUM(psr.`index`) as passengerCount
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 2 AND psr.position_type = 1
+    AND psr.province = #{provinceName}
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.city
+    ORDER BY psr.`index` desc
+  </select>
+
+  <select id="selectProInnerCity2" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.city as city,SUM(psr.`index`) as count
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 2 AND psr.position_type = 1
+    AND psr.province = #{provinceName}
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.city
+    ORDER BY psr.`index` desc
+  </select>
+
+
+
+  <select id="selectProvincePassenger" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.province as provinceName,SUM(psr.`index`) as passengerCount
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 1 AND psr.position_type = 1
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.province
+    ORDER BY psr.`index` desc
+  </select>
+
+  <select id="selectProvincePassenger2" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.province as province,SUM(psr.`index`) as count
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 1 AND psr.position_type = 1
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.province
+    ORDER BY psr.`index` desc
+  </select>
+
+  <select id="selectCityPassenger" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.city as cityName,SUM(psr.`index`) as passengerCount
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 2 AND psr.position_type = 1
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.city
+    ORDER BY psr.`index` desc
+  </select>
+
+  <select id="selectCityPassenger2" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT
+    psr.city as city,SUM(psr.`index`) as count
+    FROM aone_passenger_hw_source_region psr
+    WHERE psr.`level` = 2 AND psr.position_type = 1
+    AND psr.date_log BETWEEN #{startTime} AND #{endTime}
+    GROUP BY psr.city
+    ORDER BY psr.`index` desc
+  </select>
+
+  <select id="selectPtTouristMonitorNwblx" resultType="java.util.Map">
+    SELECT
+    lydmc as areaName,SUM(rs) as totalPeople
+    FROM pt_tourists_source
+   WHERE
+    rdate BETWEEN #{startTime}  AND #{endTime}
+    AND nwblx = #{nwblx}
+    AND LEFT(lyddm,2) !=33
+    GROUP BY LEFT(lyddm,2)
+    ORDER BY totalPeople DESC
+    limit 5
+    </select>
+
+  <select id="selectPtTouristMonitorNeibin" resultType="java.util.Map">
+    SELECT
+    LEFT(lydmc,2) as areaName,SUM(rs) as totalPeople
+    FROM pt_tourists_source
+   WHERE
+    rdate BETWEEN #{startTime}  AND #{endTime}
+    AND nwblx = '内宾'
+    AND LEFT(lyddm,2) !=33
+    GROUP BY LEFT(lyddm,2)
+    ORDER BY totalPeople DESC
+    limit 5
+    </select>
+
+
+  <select id="selectProInnnerOutPercent" resultType="java.util.Map">
+    SELECT
+    (SUM(CASE WHEN newdm=33 THEN 0 ELSE res.totalPepole END)/SUM(res.totalPepole)) as outProvince
+    FROM(
+    SELECT
+    LEFT(lyddm,2) as newdm,nwblx,lydmc,SUM(rs) as totalPepole
+    FROM pt_tourists_source
+     WHERE
+     nwblx = '内宾'
+     and
+     rdate BETWEEN #{startTime}  AND #{endTime}
+    GROUP BY newdm
+    )res
+  </select>
+  <select id="selectNwbNum" resultType="java.util.Map">
+    SELECT
+    nwblx,SUM(rs) as totalPepole
+    FROM pt_tourists_source
+    GROUP BY nwblx
+  </select>
+
+
+  <select id="selectGongAnProInnnerTop5" resultType="java.util.Map">
+     SELECT
+    RIGHT(LEFT(lydmc,6),3) as areaName,
+    SUM(rs) as totalPeople
+    FROM
+    `pt_tourists_source`
+    WHERE
+    `lyddm` LIKE '33%'
+    and
+    rdate BETWEEN #{startTime}  AND #{endTime}
+    AND `nwblx` = '内宾'
+    GROUP BY LEFT(lyddm,4)
+    ORDER BY totalPeople DESC
+    LIMIT 5
+  </select>
+
+
+</mapper>

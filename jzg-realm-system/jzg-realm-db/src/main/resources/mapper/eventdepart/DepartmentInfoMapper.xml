@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.eventdepart.DepartmentInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.eventdepart.DepartmentInfo">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="duty" property="duty" />
+        <result column="leader" property="leader" />
+        <result column="leader_login_name" property="leaderLoginName" />
+        <result column="leader_user_id" property="leaderUserId" />
+        <result column="address" property="address" />
+        <result column="phone" property="phone" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_delete" property="isDelete" />
+    </resultMap>
+
+    <select id="selectAllDepartments" resultType="java.util.Map">
+        select id as departId, `name` as departName, leader  from department_info
+    </select>
+
+
+    <select id="selectPageList" resultType="java.util.Map">
+        select di.id as departId, di.`name` as departmentName, di.duty, di.leader as leaderMemberId,
+        dm.`name` as leaderName,di.address,
+        di.phone,di.create_time as createTime
+        from department_info di
+        left join department_member dm on di.leader = dm.id
+        where di.is_delete = 0
+        <if test="departName!=null ">
+            and di.`name` like Concat('%',#{departName},'%')
+        </if>
+        order by di.create_time desc
+    </select>
+
+
+
+    <resultMap id="BaseMap2" extends="BaseResultMap" type="com.zzy.db.dto.DepartmentInfoMemberInfo">
+        <result column="memberName" property="memberName" />
+        <result column="headIcon" property="headIcon" />
+    </resultMap>
+    <select id="selectleaderInfoByMemberIds" resultMap="BaseMap2">
+         select
+         di.*, dm.`name` as memberName,dm.head_icon as headIcon
+         from department_info di
+         left join department_member dm on di.leader = dm.id
+         where dm.id in
+        <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

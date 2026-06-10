@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.log.JzgLogOpertertMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.log.JzgLogOpertert">
+        <id column="id" property="id" />
+        <result column="open_user" property="openUser" />
+        <result column="log_type" property="logType" />
+        <result column="oper_type" property="operType" />
+        <result column="log_platfrom" property="logPlatfrom" />
+        <result column="oper_content" property="operContent" />
+        <result column="remote_ip" property="remoteIp" />
+        <result column="request_method" property="requestMethod" />
+        <result column="request_param" property="requestParam" />
+        <result column="consume_time" property="consumeTime" />
+        <result column="response_tesult" property="responseTesult" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, open_user, log_type, oper_type, log_platfrom, oper_content, remote_ip, request_method, request_param, consume_time, response_tesult
+    </sql>
+
+</mapper>

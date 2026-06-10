@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuwa.infrastructure.discovery.database.task.mapper.ScenicTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.nuwa.infrastructure.discovery.database.user.vo.NewTaskVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="picture" property="picture"/>
+        <result column="limit_apply_max" property="limitApplyMax"/>
+        <result column="applyTotal" property="applyTotal"/>
+        <result column="begin_date" property="beginDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="address" property="address"/>
+        <result column="linkman_telephone" property="linkmanTelephone"/>
+        <result column="introduce_text" property="introduceText"/>
+        <result column="industry_code" property="industryCode"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="userInfoList" column="{id=id}"
+                    select="sectionList">
+        </collection>
+    </resultMap>
+
+    <select id="selectNewTaskList" resultMap="BaseResultMap">
+        SELECT st.id, st.NAME,st.picture, st.limit_apply_max,IFNULL(mta.applyTotal, 0) AS applyTotal,
+        st.begin_date, st.linkman_telephone, st.end_date,st.industry_code, st.address, st.introduce_text,create_time
+        FROM scenic_task st
+        LEFT JOIN  (SELECT task_id,  COUNT(task_id) AS applyTotal
+        FROM member_task_apply) mta
+        ON mta.task_id = st.id
+        WHERE  st.mch_id = #{mchId}
+        ORDER BY st.create_time DESC, applyTotal DESC
+    </select>
+
+    <select id="getMyPublishTaskList" resultType="com.nuwa.infrastructure.discovery.database.user.vo.MyTaskVO">
+      SELECT  st.id,  st.NAME , st.create_time, st.audit_status
+          FROM scenic_task st
+          WHERE
+          st.create_by_id =#{userId}
+    </select>
+
+    <select id="sectionList"  resultType="Map">
+        SELECT mta.create_by_name,mb.user_img
+        FROM  member_task_apply mta
+        LEFT JOIN(SELECT user_id,user_img FROM member)mb
+        on mb.user_id = mta.user_id
+        WHERE task_id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.db.dao.base.InfoActivityPropagateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.db.entity.base.InfoActivityPropagate">
+        <id column="id" property="id" />
+        <result column="activity_picture_address" property="activityPictureAddress" />
+        <result column="activty_descriptio" property="activtyDescriptio" />
+        <result column="create_time" property="createTime" />
+        <result column="create_name" property="createName" />
+        <result column="create_id" property="createId" />
+        <result column="is_eable" property="isEable" />
+        <result column="is_delete" property="isDelete" />
+        <result column="release_place" property="releasePlace" />
+        <result column="use_place" property="usePlace" />
+        <result column="activity_title" property="activityTitle" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, activity_picture_address, activty_descriptio, create_time, create_name, create_id, is_eable, is_delete, release_place, use_place, activity_title
+    </sql>
+
+    <select id="selectPageListInfoActivityPropagate" resultMap="BaseResultMap">
+        select * from info_activity_propagate
+        <where>
+            <if test="departName!=null ">
+                and activity_title like Concat('%',#{departName},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+</mapper>

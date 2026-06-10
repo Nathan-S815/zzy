@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.security.lib.dao.UserLoginLogMapper">
+  <resultMap id="BaseResultMap" type="com.zzy.security.lib.entity.UserLoginLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="login_action" jdbcType="VARCHAR" property="loginAction" />
+    <result column="login_number" jdbcType="INTEGER" property="loginNumber" />
+    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+    <result column="login_addr" jdbcType="VARCHAR" property="loginAddr" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, login_action, login_number, login_time, login_addr
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_login_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_login_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zzy.security.lib.entity.UserLoginLog">
+    insert into user_login_log (id, user_name, login_action,
+      login_number, login_time, login_addr
+      )
+    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{loginAction,jdbcType=VARCHAR}, 
+      #{loginNumber,jdbcType=INTEGER}, #{loginTime,jdbcType=TIMESTAMP}, #{loginAddr,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zzy.security.lib.entity.UserLoginLog">
+    insert into user_login_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="loginAction != null">
+        login_action,
+      </if>
+      <if test="loginNumber != null">
+        login_number,
+      </if>
+      <if test="loginTime != null">
+        login_time,
+      </if>
+      <if test="loginAddr != null">
+        login_addr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginAction != null">
+        #{loginAction,jdbcType=VARCHAR},
+      </if>
+      <if test="loginNumber != null">
+        #{loginNumber,jdbcType=INTEGER},
+      </if>
+      <if test="loginTime != null">
+        #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginAddr != null">
+        #{loginAddr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zzy.security.lib.entity.UserLoginLog">
+    update user_login_log
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginAction != null">
+        login_action = #{loginAction,jdbcType=VARCHAR},
+      </if>
+      <if test="loginNumber != null">
+        login_number = #{loginNumber,jdbcType=INTEGER},
+      </if>
+      <if test="loginTime != null">
+        login_time = #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginAddr != null">
+        login_addr = #{loginAddr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zzy.security.lib.entity.UserLoginLog">
+    update user_login_log
+    set user_name = #{userName,jdbcType=VARCHAR},
+      login_action = #{loginAction,jdbcType=VARCHAR},
+      login_number = #{loginNumber,jdbcType=INTEGER},
+      login_time = #{loginTime,jdbcType=TIMESTAMP},
+      login_addr = #{loginAddr,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+  <!--********************************************custom method********************************************-->
+
+
+  <select id="selectByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_login_log
+    where user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+    <insert id="upsertSelective" parameterType="com.zzy.security.lib.entity.UserLoginLog">
+    insert into user_login_log (id, user_name, login_action,
+      login_number, login_time, login_addr
+      )
+    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{loginAction,jdbcType=VARCHAR},
+      #{loginNumber,jdbcType=INTEGER}, #{loginTime,jdbcType=TIMESTAMP}, #{loginAddr,jdbcType=VARCHAR}
+      )
+    ON DUPLICATE KEY UPDATE
+    login_action = values(login_action),
+    login_number = values(login_number),
+      login_time = values(login_time),
+      login_addr =values(login_addr)
+  </insert>
+
+
+  <select id="selectUserWithDepartmentInfoH5ByUserName" resultType="com.zzy.security.dto.UserLoginInfo">
+   SELECT
+     sui.id as userId, sui.user_name as loginName,
+	 jdm.id as memberId,jdm.department_id as departId,jdi.`name` as departmentName,
+	 jdm.`name`, jdm.phone_number as phone,jdm.title,jdm.email
+    FROM
+    security_login.user_info sui
+		LEFT JOIN jzg_realm_system.department_member jdm ON sui.user_name = jdm.login_name
+		LEFT JOIN jzg_realm_system.department_info jdi ON jdm.department_id = jdi.id
+		WHERE sui.user_name = #{userName}
+  </select>
+
+  <select id="selectUserWithDepartmentInfoPcByUserName" resultType="com.zzy.security.dto.UserLoginInfo">
+        SELECT
+         sui.id as userId, sui.user_name as loginName,
+		 jdm.id as memberId,jdm.department_id as departId,jdi.`name` as departmentName,
+	     jdm.`name`, jdm.phone_number as phone,jdm.title,jdm.email
+      FROM
+      security_login.user_info sui
+		LEFT JOIN jzg_realm_system.department_info jdi ON sui.user_name = jdi.leader_login_name
+		LEFT JOIN jzg_realm_system.department_member jdm ON jdi.leader = jdm.id
+		WHERE sui.user_name =  #{userName}
+  </select>
+
+
+    <select id="selectMerchantTypeCodeByRoleName" resultType="java.lang.String">
+        select type_code from jzg_realm_system.merchant_type where type_name in
+      <foreach collection="roles" item="role" index="index" open="(" close=")" separator=",">
+        #{role}
+      </foreach>
+    </select>
+
+  <select id="selectBaseInfoIdByNameAndUserId" resultType="java.util.Map">
+    select id,audit_state as auditState, ${tableName}_name as baseName from jzg_realm_system.report_base_${tableName}
+    where user_id = ${userId} and is_delete = 0
+  </select>
+
+
+</mapper>
